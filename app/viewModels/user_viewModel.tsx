@@ -1,147 +1,123 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Toast from 'react-native-toast-message';
 import { User } from '../models/user.model';
-import { Emplacement } from '../models/emplacement_model';
+import { RootState } from '../store';
+import {
+  fetchUsersStart,
+  fetchUsersSuccess,
+  fetchUsersFailure,
+  addUserStart,
+  addUserSuccess,
+  addUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
+} from '../store/profilSlice';
 
-export function useUserViewModel() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+const useUserViewModel = () => {
+  const dispatch = useDispatch();
+  const users = useSelector((state: RootState) => state.profil.users);
+  const loading = useSelector((state: RootState) => state.profil.loading);
+  const error = useSelector((state: RootState) => state.profil.error);
+  const apiBaseUrl = process.env.REACT_APP_USER_API_BASE_URL;
 
-  // Charger les utilisateurs (y compris leurs emplacements)
   useEffect(() => {
     const fetchUsers = async () => {
+      dispatch(fetchUsersStart());
       try {
-        // Simulation de données d'exemple
-        const data: User[] = [
-          {
-            id_user: '1',
-            prenom: 'John',
-            nom: 'Doe',
-            email: 'john.doe@example.com',
-            telephone: '1234567890',
-            mot_de_passe: 'password123',
-            role: 'admin',
-            photo: 'https://via.placeholder.com/150',
-            emplacements: [
-              {
-                id_emplacement: '1',
-                id_user: '1',
-                localisation: 'Paris',
-                caracteristique: 'Spacieux',
-                equipement: ['WiFi', 'TV'],
-                tarif: 100,
-                disponible: true,
-                photos: ['https://via.placeholder.com/150'],
-                moyenneAvis: 4.5,
-                coordonnees: {
-                  latitude: 48.8566,
-                  longitude: 2.3522,
-                  latitudeDelta: 0.0922,
-                  longitudeDelta: 0.0421,
-                },
-              },
-            ],
-            reservations: [],
-            emplacementsFavoris: [],
-          },
-          {
-            id_user: '2',
-            prenom: 'Jane',
-            nom: 'Smith',
-            email: 'jane.smith@example.com',
-            telephone: '0987654321',
-            mot_de_passe: 'password456',
-            role: 'user',
-            photo: 'https://via.placeholder.com/150',
-            emplacements: [],
-            reservations: [],
-            emplacementsFavoris: [],
-          },
-        ];
-
-        setUsers(data);
+        const response = await fetch(`${apiBaseUrl}/users`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data: User[] = await response.json();
+        dispatch(fetchUsersSuccess(data));
       } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
+        dispatch(fetchUsersFailure((error as Error).message));
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [dispatch, apiBaseUrl]);
 
-  // Gérer les utilisateurs
-  const addUser = (newUser: User) => {
-    setUsers([...users, newUser]);
+  const addUser = async (newUser: User) => {
+    dispatch(addUserStart());
+    try {
+      const response = await fetch(`${apiBaseUrl}/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newUser),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const addedUser = await response.json();
+      dispatch(addUserSuccess(addedUser));
+    } catch (error) {
+      console.error('Failed to add user:', error);
+      dispatch(addUserFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de l\'ajout de l\'utilisateur',
+        text2: (error as Error).message,
+      });
+    }
   };
 
-  const updateUser = (id_user: string, updatedUser: Partial<User>) => {
-    setUsers(users.map(user => 
-      user.id_user === id_user ? { ...user, ...updatedUser } : user
-    ));
+  const updateUser = async (id_user: string, updatedUser: Partial<User>) => {
+    dispatch(updateUserStart());
+    try {
+      const response = await fetch(`${apiBaseUrl}/users/${id_user}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedUser),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updated = await response.json();
+      dispatch(updateUserSuccess({ id: id_user, updatedUser: updated }));
+    } catch (error) {
+      console.error('Failed to update user:', error);
+      dispatch(updateUserFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de la mise à jour de l\'utilisateur',
+        text2: (error as Error).message,
+      });
+    }
   };
 
-  const deleteUser = (id_user: string) => {
-    setUsers(users.filter(user => user.id_user !== id_user));
-    console.log('User deleted:', id_user);
-  };
+  const deleteUser = async (id_user: string) => {
+    dispatch(deleteUserStart());
+    try {
+      const response = await fetch(`${apiBaseUrl}/users/${id_user}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      dispatch(deleteUserSuccess(id_user));
+    } catch (error) {
+      console.error('Failed to delete user:', error);
+      dispatch(deleteUserFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de la suppression de l\'utilisateur',
+        text2: (error as Error).message,
+      });
+    }
+  }; 
 
   const getUserById = (id_user: string) => {
     return users.find(user => user.id_user === id_user) || null;
-  };
-
-  // Gérer les emplacements
-  const addEmplacement = (id_user: string, newEmplacement: Emplacement) => {
-    setUsers(users.map(user => 
-      user.id_user === id_user
-        ? { ...user, emplacements: [...user.emplacements, newEmplacement] }
-        : user
-    ));
-  };
-
-  const updateEmplacement = (id_user: string, id_emplacement: string, updatedEmplacement: Partial<Emplacement>) => {
-    setUsers(users.map(user => 
-      user.id_user === id_user
-        ? {
-          ...user,
-          emplacements: user.emplacements.map(emplacement =>
-            emplacement.id_emplacement === id_emplacement
-              ? { ...emplacement, ...updatedEmplacement }
-              : emplacement
-          ),
-        }
-        : user
-    ));
-  };
-
-  const deleteEmplacement = (id_user: string, id_emplacement: string) => {
-    setUsers(users.map(user => 
-      user.id_user === id_user
-        ? { ...user, emplacements: user.emplacements.filter(e => e.id_emplacement !== id_emplacement) }
-        : user
-    ));
-  };
-
-  const getEmplacementsByUser = (id_user: string) => {
-    const user = getUserById(id_user);
-    return user?.emplacements || [];
-  };
-
-  // Gérer les emplacements favoris
-  const addFavoriteEmplacement = (id_user: string, newEmplacement: Emplacement) => {
-    setUsers(users.map(user => 
-      user.id_user === id_user 
-        ? { ...user, emplacementsFavoris: [...(user.emplacementsFavoris || []), newEmplacement] }
-        : user
-    ));
-  };
-
-  const removeFavoriteEmplacement = (id_user: string, id_emplacement: string) => {
-    setUsers(users.map(user => 
-      user.id_user === id_user 
-        ? { ...user, emplacementsFavoris: user.emplacementsFavoris?.filter(e => e.id_emplacement !== id_emplacement) }
-        : user
-    ));
   };
 
   return {
@@ -151,12 +127,8 @@ export function useUserViewModel() {
     addUser,
     updateUser,
     deleteUser,
-    getUserById,
-    addEmplacement,
-    updateEmplacement,
-    deleteEmplacement,
-    getEmplacementsByUser,
-    addFavoriteEmplacement,
-    removeFavoriteEmplacement,
+    getUserById,  
   };
-}
+};
+
+export default useUserViewModel;
