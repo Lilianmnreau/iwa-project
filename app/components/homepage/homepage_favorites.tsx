@@ -7,6 +7,9 @@ import SkeletonFavorite from './skeleton_favorite'; // Importer le composant Ske
 import useEmplacementViewModel from '../../viewModels/emplacement_viewModel';
 import useEmplacementFavoriteViewModel from '../../viewModels/emplacement_favorite_viewModel';
 import { Emplacement } from '../../models/emplacement_model';
+import Toast from 'react-native-toast-message';
+import { useDispatch } from 'react-redux';
+import { fetchFavoritesStart, fetchFavoritesSuccess, fetchFavoritesFailure } from '../../store/favoritesSlice';
 
 export default function HomepageFavorites() {
     const { emplacements, loading, error, getEmplacementById } = useEmplacementViewModel(); // Utiliser le ViewModel
@@ -14,7 +17,9 @@ export default function HomepageFavorites() {
     const width = Dimensions.get("window").width;
     const carouselRef = React.useRef<ICarouselInstance>(null);
     const navigation = useNavigation();
+    const dispatch = useDispatch();
     const userId = "user123"; // Remplacer par l'ID utilisateur réel
+    const apiBaseUrl = process.env.REACT_APP_ARTICLE_API_BASE_URL;
 
     // Simuler des données favorites (à adapter selon vos besoins)
     const [favorites, setFavorites] = useState<string[]>(['1', '3']); // IDs des emplacements favoris
@@ -40,8 +45,26 @@ export default function HomepageFavorites() {
     };
 
     const handleReloadPress = () => {
-        // Logique pour recharger les emplacements
+        fetchFavorites();
     };
+
+    async function fetchFavorites() {
+        dispatch(fetchFavoritesStart());
+        try {
+          const response = await fetch(`${apiBaseUrl}/articles`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data: Emplacement[] = await response.json();
+          dispatch(fetchFavoritesSuccess(data));
+        } catch (error) {
+          dispatch(fetchFavoritesFailure((error as Error).message));
+            Toast.show({
+              type: 'error',
+              text1: 'Échec de la récupération des favoris',
+            });
+        }
+      };
 
     if (loading) {
         return (

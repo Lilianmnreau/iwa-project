@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Favorites } from '../models/favorite_model';
+import { Emplacement } from '../models/emplacement_model';
 
 interface FavoritesState {
-  favorites: Favorites[];
+  favorites: Emplacement[];
   loading: boolean;
   error: string | null;
 }
@@ -21,7 +21,7 @@ const favoritesSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    fetchFavoritesSuccess(state, action: PayloadAction<Favorites[]>) {
+    fetchFavoritesSuccess(state, action: PayloadAction<Emplacement[]>) {
       state.favorites = action.payload;
       state.loading = false;
     },
@@ -29,7 +29,7 @@ const favoritesSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    addFavorite(state, action: PayloadAction<Favorites>) {
+    addFavorite(state, action: PayloadAction<Emplacement>) {
       state.favorites.push(action.payload);
     },
     removeFavorite(state, action: PayloadAction<{ id_user: string; id_emplacement: string }>) {
