@@ -1,10 +1,7 @@
+/** @type {import('ts-jest').JestConfigWithTsJest} **/
 module.exports = {
-    preset: 'jest-expo',
-    setupFilesAfterEnv: ['@testing-library/jest-native/extend-expect'],
-    transform: {
-      '^.+\\.tsx?$': 'ts-jest',
-    },
-    transformIgnorePatterns: [
-      'node_modules/(?!((jest-)?react-native|@react-native(-community)?)/)',
-    ],
-  };
+  testEnvironment: "node",
+  transform: {
+    "^.+.tsx?$": ["ts-jest",{}],
+  },
+};
