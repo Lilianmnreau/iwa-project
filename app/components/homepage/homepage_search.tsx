@@ -20,31 +20,27 @@ export default function HomepageSearch() {
                 value={query}
                 placeholder="Commencez vos recherches !"
                 onFocus={() => {handleFocus()}}
+                scrollEnabled={false} // Empêche le texte de défiler
+                onChangeText={setQuery}
             />
         </View>
     )
 }
 
-
 const styles = StyleSheet.create({
+    autocompleteWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        backgroundColor: '#fff',
+    },
     searchIcon: {
         marginRight: 10,
     },
     textInput: {
         flex: 1,
-        height: '100%',
-        borderWidth: 0,
-    },
-    autocompleteWrapper: {
-        zIndex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 10,
-        margin: 10,
-        padding: 10,
-        backgroundColor: 'white', // Ajout d'un fond blanc pour le conteneur
-        height: 50, // Fixe la hauteur de la vue de l'autocomplete
     },
 });
