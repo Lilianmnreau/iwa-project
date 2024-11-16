@@ -113,84 +113,6 @@ const profilSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    addEmplacementStart(state) {
-      state.loading = true;
-      state.error = null;
-    },
-    addEmplacementSuccess(state, action: PayloadAction<{ id_user: string; emplacement: Emplacement }>) {
-      const user = state.users.find(user => user.id_user === action.payload.id_user);
-      if (user) {
-        user.emplacements.push(action.payload.emplacement);
-      }
-      state.loading = false;
-    },
-    addEmplacementFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    updateEmplacementStart(state) {
-      state.loading = true;
-      state.error = null;
-    },
-    updateEmplacementSuccess(state, action: PayloadAction<{ id_user: string; id_emplacement: string; updatedEmplacement: Emplacement }>) {
-      const user = state.users.find(user => user.id_user === action.payload.id_user);
-      if (user) {
-        const index = user.emplacements.findIndex(emplacement => emplacement.id_emplacement === action.payload.id_emplacement);
-        if (index !== -1) {
-          user.emplacements[index] = action.payload.updatedEmplacement;
-        }
-      }
-      state.loading = false;
-    },
-    updateEmplacementFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    deleteEmplacementStart(state) {
-      state.loading = true;
-      state.error = null;
-    },
-    deleteEmplacementSuccess(state, action: PayloadAction<{ id_user: string; id_emplacement: string }>) {
-      const user = state.users.find(user => user.id_user === action.payload.id_user);
-      if (user) {
-        user.emplacements = user.emplacements.filter(emplacement => emplacement.id_emplacement !== action.payload.id_emplacement);
-      }
-      state.loading = false;
-    },
-    deleteEmplacementFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    addFavoriteEmplacementStart(state) {
-      state.loading = true;
-      state.error = null;
-    },
-    addFavoriteEmplacementSuccess(state, action: PayloadAction<{ id_user: string; emplacement: Emplacement }>) {
-      const user = state.users.find(user => user.id_user === action.payload.id_user);
-      if (user) {
-        user.emplacementsFavoris.push(action.payload.emplacement);
-      }
-      state.loading = false;
-    },
-    addFavoriteEmplacementFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
-    removeFavoriteEmplacementStart(state) {
-      state.loading = true;
-      state.error = null;
-    },
-    removeFavoriteEmplacementSuccess(state, action: PayloadAction<{ id_user: string; id_emplacement: string }>) {
-      const user = state.users.find(user => user.id_user === action.payload.id_user);
-      if (user) {
-        user.emplacementsFavoris = user.emplacementsFavoris.filter(emplacement => emplacement.id_emplacement !== action.payload.id_emplacement);
-      }
-      state.loading = false;
-    },
-    removeFavoriteEmplacementFailure(state, action: PayloadAction<string>) {
-      state.loading = false;
-      state.error = action.payload;
-    },
   },
 });
 
@@ -217,21 +139,6 @@ export const {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-  addEmplacementStart,
-  addEmplacementSuccess,
-  addEmplacementFailure,
-  updateEmplacementStart,
-  updateEmplacementSuccess,
-  updateEmplacementFailure,
-  deleteEmplacementStart,
-  deleteEmplacementSuccess,
-  deleteEmplacementFailure,
-  addFavoriteEmplacementStart,
-  addFavoriteEmplacementSuccess,
-  addFavoriteEmplacementFailure,
-  removeFavoriteEmplacementStart,
-  removeFavoriteEmplacementSuccess,
-  removeFavoriteEmplacementFailure,
 } = profilSlice.actions;
 
 export default profilSlice.reducer;
