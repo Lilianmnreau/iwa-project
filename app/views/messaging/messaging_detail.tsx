@@ -80,7 +80,7 @@ export default function MessagesDetail({ route }: any) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <TouchableOpacity onPress={() => navigation.goBack()} testID="send-button">
+          <TouchableOpacity onPress={() => navigation.goBack()} testID="go-back-button">
             <Ionicons name="arrow-back" size={32} color="black" />
           </TouchableOpacity>
           <TouchableOpacity

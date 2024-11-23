@@ -67,6 +67,7 @@ export default function MessagesView() {
         onPress={() =>
           navigation.navigate("MessagesDetail", { conversationId: item.id_conversation })
         }
+        testID={`conversation-${item.id_conversation}`}
       >
         <View style={styles.conversationItem}>
           <Image
