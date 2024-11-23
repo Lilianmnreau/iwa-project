@@ -18,19 +18,20 @@ export default function HomeView() {
     const testState = useSelector((state: any) => state.testState);
 
     const renderItem = ({ item }) => (
-        <View style={styles.componentContainer}>
+        <View style={styles.componentContainer} testID="home-item">
             {item.component}
         </View>
     );
 
     return (
         <FlatList
-            data={components}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            contentContainerStyle={styles.container}
+          data={components}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          contentContainerStyle={styles.container}
+          testID="home-flatlist"
         />
-    );
+      );
 }
 
 const styles = StyleSheet.create({

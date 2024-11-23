@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`HomeView doit rendre correctement le composant 1`] = `
+<RCTScrollView
+  contentContainerStyle={
+    {
+      "backgroundColor": "#fff",
+      "flexGrow": 1,
+    }
+  }
+  data={
+    [
+      {
+        "component": <Unknown />,
+        "id": "1",
+      },
+      {
+        "component": <Unknown />,
+        "id": "2",
+      },
+      {
+        "component": <Unknown />,
+        "id": "3",
+      },
+      {
+        "component": <Unknown />,
+        "id": "4",
+      },
+    ]
+  }
+  getItem={[Function]}
+  getItemCount={[Function]}
+  keyExtractor={[Function]}
+  onContentSizeChange={[Function]}
+  onLayout={[Function]}
+  onMomentumScrollBegin={[Function]}
+  onMomentumScrollEnd={[Function]}
+  onScroll={[Function]}
+  onScrollBeginDrag={[Function]}
+  onScrollEndDrag={[Function]}
+  removeClippedSubviews={false}
+  renderItem={[Function]}
+  scrollEventThrottle={50}
+  stickyHeaderIndices={[]}
+  testID="home-flatlist"
+  viewabilityConfigCallbackPairs={[]}
+>
+  <View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <View
+        style={
+          {
+            "marginBottom": 20,
+          }
+        }
+        testID="home-item"
+      >
+        <Text>
+          HomepageBanner
+        </Text>
+      </View>
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <View
+        style={
+          {
+            "marginBottom": 20,
+          }
+        }
+        testID="home-item"
+      >
+        <Text>
+          HomepageSearch
+        </Text>
+      </View>
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <View
+        style={
+          {
+            "marginBottom": 20,
+          }
+        }
+        testID="home-item"
+      >
+        <Text>
+          HomepageFavorites
+        </Text>
+      </View>
+    </View>
+    <View
+      onFocusCapture={[Function]}
+      onLayout={[Function]}
+      style={null}
+    >
+      <View
+        style={
+          {
+            "marginBottom": 20,
+          }
+        }
+        testID="home-item"
+      >
+        <Text>
+          HomepageArticles
+        </Text>
+      </View>
+    </View>
+  </View>
+</RCTScrollView>
+`;
