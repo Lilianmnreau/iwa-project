@@ -19,6 +19,9 @@
     "production": {
       "autoIncrement": true,
       "channel": "production",
+      "android": {
+        "buildType": "apk"
+      },
       "env" : {
         "ARTICLE_MICROSERVICE_URL" : "article microservice url",
         "EMPLACEMENT_MICROSERVICE_URL" : "emplacement microservice url"
