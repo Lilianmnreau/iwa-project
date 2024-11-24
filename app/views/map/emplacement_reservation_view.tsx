@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Calendar } from 'react-native-calendars'; 
 import moment from 'moment'; 
-import { Reservation } from './profil/profile_view';
+import { Reservation } from '../../models/reservation.model';
 import Toast from 'react-native-toast-message'; // Importer Toast
 import { useNavigation } from '@react-navigation/native'; // Importer useNavigation
 
@@ -116,7 +116,7 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
       setMarkedDates({});
 
       // Rediriger vers la page d'accueil
-      navigation.navigate('Map');
+      navigation.navigate('Map' as never);
     } else {
       Toast.show({
         type: 'error',
@@ -139,7 +139,7 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
         enableSwipeMonths={true}
       />
 
-      <Pressable style={styles.button} onPress={handleReservationConfirmation}>
+      <Pressable testID="confirm-reservation-button" style={styles.button} onPress={handleReservationConfirmation}>
         <Text style={styles.text_button}>Confirmer la réservation</Text>
       </Pressable>
     </View>

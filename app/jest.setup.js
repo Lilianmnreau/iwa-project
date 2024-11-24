@@ -16,4 +16,13 @@ jest.mock('expo-constants', () => ({
     Ionicons: 'Ionicons',
     MaterialCommunityIcons: 'MaterialCommunityIcons',
   }));
+  jest.mock('react-native-calendars', () => ({
+    Calendar: jest.fn(() => null),
+  }));
+  
+  jest.mock('react-native-swipe-gestures', () => ({
+    GestureRecognizer: jest.fn(() => null),
+  }));
+  
+  jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper'); // Mock des animations
   
