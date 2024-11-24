@@ -33,31 +33,26 @@ jobs:
         with:
           eas-version: latest
 
-      # 5. Validate Expo configuration
-      - name: Validate Expo and EAS Configuration
-        run: |
-          eas whoami
-          eas project:info
-        working-directory: ./app
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      # 6. Build the APK using EAS
+      # 5. Build the APK using EAS
       - name: Build APK with EAS
         working-directory: ./app
         run: |
-          eas build --platform android --profile production --non-interactive
+          eas build --platform android --profile production --non-interactive > build_output.txt
+          cat build_output.txt
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      # 7. Download the built APK from EAS
+      # 6. Extract APK URL from build logs
+      - name: Extract APK URL
+        run: |
+          APK_URL=$(grep -o 'https://.*\.apk' ./app/build_output.txt | head -n 1)
+          echo "APK_URL=$APK_URL" >> $GITHUB_ENV
+
+      # 7. Download the built APK
       - name: Download APK
         run: |
           mkdir -p ./artifacts
-          eas build:download --platform android --path ./artifacts/app.apk
-        working-directory: ./app
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          curl -o ./artifacts/app.apk "$APK_URL"
 
       # 8. Upload the APK to GitHub Releases
       - name: Create GitHub Release
