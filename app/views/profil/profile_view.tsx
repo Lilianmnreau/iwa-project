@@ -117,6 +117,7 @@ export default function ProfilView() {
           <TouchableOpacity
             onPress={navigateToSettings}
             style={styles.settingsButton}
+            testID="settings-button"
           >
             <Ionicons name="settings" size={24} color="#37474F" />
             {/* Couleur du bouton réglages */}
@@ -138,6 +139,7 @@ export default function ProfilView() {
             <TouchableOpacity
               style={styles.editProfileButton}
               onPress={() => setIsEditing(!isEditing)}
+              testID="edit-profile-button"
             >
               {isEditing ? (
                 <MaterialCommunityIcons
@@ -244,6 +246,7 @@ export default function ProfilView() {
             <TouchableOpacity
               key={emplacement.id_emplacement}
               onPress={() => navigateToEmplacementDetails(emplacement)}
+              testID={`emplacement-${emplacement.id_emplacement}`}
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
@@ -268,6 +271,7 @@ export default function ProfilView() {
           <TouchableOpacity
             style={styles.addButton}
             onPress={handleAddEmplacement}
+            testID="add-emplacement-button"
           >
             <Ionicons name="add-circle" size={40} color="#00796B" />
           </TouchableOpacity>
@@ -287,6 +291,7 @@ export default function ProfilView() {
             <TouchableOpacity
               key={reservation.id_reservation}
               onPress={() => navigateToReservationDetails(reservation)}
+              testID={`reservation-${reservation.id_reservation}`}
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
