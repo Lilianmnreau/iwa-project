@@ -19,12 +19,11 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
-
-      # 3. Check if EXPO_TOKEN is set (debugging step)
-      - name: Check EXPO_TOKEN
-        run: echo "EXPO_TOKEN is set"
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./app
 
       # 4. Setup Expo and EAS
       - name: Setup Expo and EAS
@@ -34,14 +33,20 @@ jobs:
         with:
           eas-version: latest
 
-      # 5. Install dependencies
-      - name: Install dependencies
-        run: npm ci
+      # 5. Validate Expo configuration
+      - name: Validate Expo and EAS Configuration
+        run: |
+          eas whoami
+          eas project:info
+        working-directory: ./app
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       # 6. Build the APK using EAS
       - name: Build APK with EAS
         working-directory: ./app
-        run: eas build --platform android --profile development --non-interactive
+        run: |
+          eas build --platform android --profile production --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -50,6 +55,7 @@ jobs:
         run: |
           mkdir -p ./artifacts
           eas build:download --platform android --path ./artifacts/app.apk
+        working-directory: ./app
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -60,7 +66,7 @@ jobs:
           artifacts: ./artifacts/app.apk
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v1.0.${{ github.run_number }}
-          releaseName: "Release v1.0.${{ github.run_number }}"
+          releaseName: "Release v1.0.${{ github.run_number }} - APK Build"
           body: "This release includes the latest APK for testing or manual installation."
           draft: false
           prerelease: true
