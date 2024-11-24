@@ -35,6 +35,6 @@ jobs:
       # 5. Build the APK using EAS
       - name: Build APK with EAS
         working-directory: ./app
-        run: eas build --platform android --type apk --non-interactive
+        run: eas build --platform android --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
