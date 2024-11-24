@@ -83,10 +83,6 @@ jest.mock('react-native-reanimated', () =>
     })),
   }));
   
-  
-  
-  
-  
   jest.mock('react-native-toast-message', () => {
     const React = require('react');
     const Toast = React.forwardRef((props, ref) => null); // Return null or a simple view
@@ -99,5 +95,13 @@ jest.mock('react-native-reanimated', () =>
     };
   });
   
+  
+  jest.mock('@react-navigation/native', () => ({
+    useNavigation: jest.fn(() => ({
+      navigate: jest.fn(),
+    })),
+  }));
+  
+  jest.mock('react-native-vector-icons/Ionicons', () => 'Ionicons');
   
   
