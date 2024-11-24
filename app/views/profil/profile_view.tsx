@@ -17,7 +17,7 @@ import { couleur } from "../../color";
 import { renderRating } from "../../utils/renderRating";
 
 import { User } from "../../models/user.model";
-import { useUserViewModel } from "../../viewModels/user_viewModel";
+import useUserViewModel from "../../viewModels/user_viewModel";
 import { Emplacement } from "../../models/emplacement_model";
 import { Reservation } from "../../models/reservation.model";
 import useEmplacementViewModel from "../../viewModels/emplacement_viewModel";

@@ -2,18 +2,17 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import ArticlesPage from './all_article_view';
 import { useSelector } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
-import { Text } from 'react-native';
 
 jest.mock('react-redux', () => ({
   useSelector: jest.fn(),
 }));
 
+import { Text } from 'react-native';
+
 jest.mock('@expo/vector-icons', () => ({
-  Ionicons: jest.fn().mockImplementation(({ name, size, color }) => (
-    <Text>{`${name} icon`}</Text>
-  )),
-}));
+    Ionicons: jest.fn().mockImplementation(({ name }) => `Mocked ${name} icon`),
+  }));
+  
 
 describe('ArticlesPage', () => {
   const mockNavigation = {
@@ -25,13 +24,13 @@ describe('ArticlesPage', () => {
     {
       id_article: '1',
       titre: 'Article 1',
-      extrait_description: 'Ceci est un extrait de l\'article 1',
+      extrait_description: "Ceci est un extrait de l'article 1",
       image: 'https://via.placeholder.com/100',
     },
     {
       id_article: '2',
       titre: 'Article 2',
-      extrait_description: 'Ceci est un extrait de l\'article 2',
+      extrait_description: "Ceci est un extrait de l'article 2",
       image: 'https://via.placeholder.com/100',
     },
   ];
@@ -48,7 +47,7 @@ describe('ArticlesPage', () => {
 
     // Vérifie que le titre et le bouton retour sont présents
     expect(getByText('Tous les Articles')).toBeTruthy();
-    expect(getByText('arrow-back icon')).toBeTruthy();
+    expect(getByTestId('back-button')).toBeTruthy();
   });
 
   it('doit afficher les articles depuis le store', () => {
@@ -56,12 +55,12 @@ describe('ArticlesPage', () => {
 
     // Vérifie que les articles sont affichés
     expect(getByText('Article 1')).toBeTruthy();
-    expect(getByText('Ceci est un extrait de l\'article 1')).toBeTruthy();
+    expect(getByText("Ceci est un extrait de l'article 1")).toBeTruthy();
     expect(getByText('Article 2')).toBeTruthy();
-    expect(getByText('Ceci est un extrait de l\'article 2')).toBeTruthy();
+    expect(getByText("Ceci est un extrait de l'article 2")).toBeTruthy();
   });
 
-  it('doit naviguer vers ArticleDetails lorsqu\'un article est cliqué', () => {
+  it("doit naviguer vers ArticleDetails lorsqu'un article est cliqué", () => {
     const { getByText } = render(<ArticlesPage navigation={mockNavigation} />);
 
     // Simule un clic sur le premier article
@@ -73,11 +72,11 @@ describe('ArticlesPage', () => {
     });
   });
 
-  it('doit revenir à la page précédente lorsqu\'on clique sur le bouton retour', () => {
-    const { getByText } = render(<ArticlesPage navigation={mockNavigation} />);
+  it("doit revenir à la page précédente lorsqu'on clique sur le bouton retour", () => {
+    const { getByTestId } = render(<ArticlesPage navigation={mockNavigation} />);
 
     // Simule un clic sur le bouton retour
-    fireEvent.press(getByText('arrow-back icon'));
+    fireEvent.press(getByTestId('back-button'));
 
     // Vérifie que goBack a été appelé
     expect(mockNavigation.goBack).toHaveBeenCalled();

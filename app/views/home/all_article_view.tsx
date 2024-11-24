@@ -24,8 +24,8 @@ export default function ArticlesPage({ navigation }) {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} testID="back-button">
-                    <Ionicons name="arrow-back" size={24} color="black" />
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()} testID="back-button" >
+                    <Ionicons name="arrow-back" size={24} color="black"/>
                 </TouchableOpacity>
                 <Text style={styles.title}>Tous les Articles</Text>
             </View>

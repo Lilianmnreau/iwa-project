@@ -23,7 +23,7 @@ describe('EmplacementReservation', () => {
       date_debut: '2023-11-01',
       date_fin: '2023-11-05',
       statut: 'confirmée',
-      message_voyageur: 'Merci pour la réservation !',
+      message_voyageur: 'Merci pour la réservation !', 
       emplacement: {
         id_emplacement: '10',
         id_user: '456',
