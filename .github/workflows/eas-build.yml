@@ -22,14 +22,12 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         with:
           eas-version: latest
-      - name: Debug environment variables
-        run: env | grep EXPO_TOKEN
       - name: Install dependencies
         run: npm ci
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
       - name: Build on EAS
         run: eas build --platform android --non-interactive --no-wait
         env:
