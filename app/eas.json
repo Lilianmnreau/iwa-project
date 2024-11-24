@@ -1,0 +1,28 @@
+{
+  "cli": {
+    "version": ">= 13.4.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "channel": "development"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview"
+    },
+    "production": {
+      "autoIncrement": true,
+      "channel": "production",
+      "env" : {
+        "ARTICLE_MICROSERVICE_URL" : "article microservice url",
+        "EMPLACEMENT_MICROSERVICE_URL" : "emplacement microservice url"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
