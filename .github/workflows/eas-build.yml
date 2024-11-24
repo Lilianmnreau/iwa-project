@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build and deploy APK
+    name: Build APK for Android
     runs-on: ubuntu-latest
     steps:
       # 1. Checkout the code
@@ -19,13 +19,8 @@ jobs:
         with:
           node-version: 18.x
           cache: npm
-          
-      # 3. Install dependencies
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./app
 
-      # 4. Setup Expo and EAS
+      # 3. Setup Expo and EAS
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8
         env:
@@ -33,35 +28,13 @@ jobs:
         with:
           eas-version: latest
 
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
       # 5. Build the APK using EAS
       - name: Build APK with EAS
         working-directory: ./app
-        run: |
-          eas build --platform android --profile production --non-interactive > build_output.txt
-          cat build_output.txt
+        run: eas build --platform android --type apk --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      # 6. Extract APK URL from build logs
-      - name: Extract APK URL
-        run: |
-          APK_URL=$(grep -o 'https://.*\.apk' ./app/build_output.txt | head -n 1)
-          echo "APK_URL=$APK_URL" >> $GITHUB_ENV
-
-      # 7. Download the built APK
-      - name: Download APK
-        run: |
-          mkdir -p ./artifacts
-          curl -o ./artifacts/app.apk "$APK_URL"
-
-      # 8. Upload the APK to GitHub Releases
-      - name: Create GitHub Release
-        uses: ncipollo/release-action@v1
-        with:
-          artifacts: ./artifacts/app.apk
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v1.0.${{ github.run_number }}
-          releaseName: "Release v1.0.${{ github.run_number }} - APK Build"
-          body: "This release includes the latest APK for testing or manual installation."
-          draft: false
-          prerelease: true
