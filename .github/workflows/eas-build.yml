@@ -1,36 +1,29 @@
 name: EAS Build
-
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
-
 jobs:
   build:
+    name: Install and build
     runs-on: ubuntu-latest
-
     steps:
-    - name: Check out the repository
-      uses: actions/checkout@v2
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Install dependencies
-      run: npm ci
-
-    - name: Debug secrets
-      run: echo $EXPO_TOKEN
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-    - name: EAS Build
-      env:
-        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-      run: eas build --platform android
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: npm
+      - name: Debug secrets
+        run: echo $EXPO_TOKEN
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Build on EAS
+        run: eas build --platform android --non-interactive --no-wait
