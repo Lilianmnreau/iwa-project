@@ -1,36 +1,36 @@
 name: EAS Build
 
 on:
-push:
-  branches:
-    - main
-pull_request:
-  branches:
-    - main
-workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-build:
-  runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-  steps:
-  - name: Check out the repository
-    uses: actions/checkout@v2
+    steps:
+    - name: Check out the repository
+      uses: actions/checkout@v2
 
-  - name: Set up Node.js
-    uses: actions/setup-node@v2
-    with:
-      node-version: '14'
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
 
-  - name: Install dependencies
-    run: npm ci
+    - name: Install dependencies
+      run: npm ci
 
-  - name: Debug secrets
-    run: echo $EXPO_TOKEN
-    env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    - name: Debug secrets
+      run: echo $EXPO_TOKEN
+      env:
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-  - name: EAS Build
-    env:
-      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-    run: eas build --platform android
+    - name: EAS Build
+      env:
+        EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      run: eas build --platform android
