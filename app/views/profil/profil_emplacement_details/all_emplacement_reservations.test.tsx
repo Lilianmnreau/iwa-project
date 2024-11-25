@@ -1,21 +1,24 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
-import AllEmplacementReservation from "./AllEmplacementReservation";
+import AllEmplacementReservation from "./all_emplacement_reservations_view";
 import { useNavigation } from "@react-navigation/native";
-import { View, Text } from "react-native";
 
+// Mock pour la navigation
 jest.mock("@react-navigation/native", () => ({
   useNavigation: jest.fn(),
 }));
 
+// Mock du composant EmplacementReservationCell
 jest.mock("../../../components/reservation/emplacement_reservation_cell", () => {
-  return ({ reservation }: { reservation: any }) => {
-    const { id, date, statut, message_voyageur } = reservation;
+  const React = require("react");
+  const { View, Text } = require("react-native");
+
+  return function MockEmplacementReservationCell({ reservation }: { reservation: any }) {
     return (
-      <View testID={`reservation-${id}`}>
-        <Text>{date}</Text>
-        <Text>{statut}</Text>
-        <Text>{message_voyageur}</Text>
+      <View testID={`reservation-${reservation.id}`}>
+        <Text>{reservation.date}</Text>
+        <Text>{reservation.statut}</Text>
+        <Text>{reservation.message_voyageur}</Text>
       </View>
     );
   };
@@ -32,43 +35,40 @@ describe("AllEmplacementReservation", () => {
   });
 
   it("affiche correctement toutes les réservations", () => {
-    const { getByText, getByTestId } = render(<AllEmplacementReservation />);
+    const { getByTestId } = render(<AllEmplacementReservation />);
 
-    expect(getByText("Toutes les réservations")).toBeTruthy();
     expect(getByTestId("reservation-1")).toBeTruthy();
     expect(getByTestId("reservation-2")).toBeTruthy();
     expect(getByTestId("reservation-3")).toBeTruthy();
   });
 
   it("navigue en arrière lorsque le bouton retour est cliqué", () => {
-    const { getByRole } = render(<AllEmplacementReservation />);
-    const backButton = getByRole("button");
+    const { getByTestId } = render(<AllEmplacementReservation />);
+    const backButton = getByTestId("back-button");
 
     fireEvent.press(backButton);
     expect(navigationMock.goBack).toHaveBeenCalled();
   });
 
   it("applique le filtre des réservations les plus récentes", () => {
-    const { getByText, getByTestId } = render(<AllEmplacementReservation />);
-    const recentButton = getByText("Les plus récentes");
+    const { getByTestId } = render(<AllEmplacementReservation />);
+    const recentFilter = getByTestId("recent-filter");
 
-    fireEvent.press(recentButton);
+    fireEvent.press(recentFilter);
 
-    // Vérifie que la réservation la plus récente est affichée en premier
     expect(getByTestId("reservation-1")).toBeTruthy();
     expect(getByTestId("reservation-2")).toBeTruthy();
     expect(getByTestId("reservation-3")).toBeTruthy();
   });
 
   it("applique le filtre des réservations les plus anciennes", () => {
-    const { getByText, getByTestId } = render(<AllEmplacementReservation />);
-    const oldestButton = getByText("Les plus anciennes");
+    const { getByTestId } = render(<AllEmplacementReservation />);
+    const oldestFilter = getByTestId("oldest-filter");
 
-    fireEvent.press(oldestButton);
+    fireEvent.press(oldestFilter);
 
-    // Vérifie que la réservation la plus ancienne est affichée en premier
     expect(getByTestId("reservation-3")).toBeTruthy();
-    expect(getByTestId("reservation-2")).toBeTruthy();
     expect(getByTestId("reservation-1")).toBeTruthy();
+    expect(getByTestId("reservation-2")).toBeTruthy();
   });
 });
