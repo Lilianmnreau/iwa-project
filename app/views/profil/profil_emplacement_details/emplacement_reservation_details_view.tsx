@@ -49,31 +49,31 @@ export default function EmplacementReservationDetails() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} testID="back-button">
           <Ionicons name="arrow-back" size={24} color="#37474F" />
         </TouchableOpacity>
         <Text style={styles.title}>Détails de la Réservation</Text>
       </View>
 
-      <View style={styles.row}>
+      <View style={styles.row} testID="reservation-date">
         <Text style={styles.label}>Date:</Text>
         <Text style={styles.value}>{reservation.date}</Text>
       </View>
 
-      <View style={styles.row}>
+      <View style={styles.row} testID="reservation-status">
         <Text style={styles.label}>Statut:</Text>
         <Text style={styles.value}>{reservation.statut}</Text>
       </View>
 
-      <View style={styles.row}>
+      <View style={styles.row} testID="reservation-message">
         <Text style={styles.label}>Message:</Text>
         <Text style={styles.value}>{reservation.message_voyageur}</Text>
       </View>
 
       <View style={styles.reviewContainer}>
         <Text style={styles.reviewTitle}>Laisser un avis</Text>
-        <View style={styles.ratingContainer}>
-          <Rating rating={rating} onChange={setRating} max={5} iconWidth={30} iconHeight={30} />
+        <View style={styles.ratingContainer} testID="rating-container">
+          <Rating rating={rating} onChange={setRating} max={5} iconWidth={30} iconHeight={30} testID="rating"/>
         </View>
         <TextInput
           style={styles.commentInput}
@@ -83,11 +83,12 @@ export default function EmplacementReservationDetails() {
           placeholderTextColor="#B0BEC5"
           maxLength={maxLength} // Limite de 600 caractères
           multiline
+          testID="comment-input"
         />
         <Text style={styles.charCount}>
           {comment.length}/{maxLength} caractères
         </Text>
-        <Button mode="contained" onPress={handleSubmit} style={styles.submitButton}>
+        <Button testID="submit-button" mode="contained" onPress={handleSubmit} style={styles.submitButton}>
           Soumettre
         </Button>
       </View>
