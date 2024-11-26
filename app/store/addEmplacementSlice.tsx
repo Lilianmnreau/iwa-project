@@ -2,17 +2,23 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Emplacement } from "../models/emplacement_model";
 
 const initialState: Emplacement = {
-    id_emplacement: null,
-    id_user: null,
-    localisation: null,
-    caracteristique: null,
+    id_emplacement: '',
+    id_user: '',
+    localisation: '',
+    caracteristique: '',
     equipement: [],
-    tarif: null,
-    disponible: null,
-    moyenneAvis: null,
-    photos: null,
-    coordonnees: null,
+    tarif: 0,
+    disponible: false,
+    moyenneAvis: 0,
+    photos: [],
+    coordonnees: {
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.01, 
+        longitudeDelta: 0.01, 
+    },
 };
+
 
 const emplacementSlice = createSlice({
     name: 'emplacement',
