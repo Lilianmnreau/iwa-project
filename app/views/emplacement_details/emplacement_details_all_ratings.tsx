@@ -39,6 +39,7 @@ export default function EmplacementDetailsAllRatings() {
                     name={i < filledStars ? "star" : "star-outline"}
                     size={18}
                     color="#FFD700"
+                    testID="star"
                 />
             );
         }
@@ -86,7 +87,7 @@ export default function EmplacementDetailsAllRatings() {
                     <Text>Les pires</Text>
                 </TouchableOpacity>
                 {[5, 4, 3, 2, 1].map(stars => (
-                    <TouchableOpacity key={stars} onPress={() => setFilter(stars.toString())} style={styles.filterButton}>
+                    <TouchableOpacity key={stars} onPress={() => setFilter(stars.toString())} style={styles.filterButton} testID={`filter-${stars}`}>
                         <View style={styles.starWrapper}>
                             <View style={styles.starContainer}>{renderStars(stars)}</View>
                         </View>

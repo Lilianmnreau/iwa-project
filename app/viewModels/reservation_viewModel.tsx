@@ -1,137 +1,138 @@
-import { useState, useEffect } from "react";
-import { Emplacement } from "../models/emplacement_model";
-
-export type Reservation = {
-  id_reservation: string;
-  id_user: string;
-  date_debut: string;
-  date_fin: string;
-  statut: string;
-  message_voyageur: string;
-  emplacement: Emplacement;
-};
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import Toast from 'react-native-toast-message';
+import { Reservation } from '../models/reservation.model';
+import { RootState } from '../store';
+import {
+  fetchReservationsStart,
+  fetchReservationsSuccess,
+  fetchReservationsFailure,
+  addReservationStart,
+  addReservationSuccess,
+  addReservationFailure,
+  updateReservationStart,
+  updateReservationSuccess,
+  updateReservationFailure,
+  deleteReservationStart,
+  deleteReservationSuccess,
+  deleteReservationFailure,
+} from '../store/reservationSlice';
 
 const useReservationViewModel = () => {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const reservations = useSelector((state: RootState) => state.reservation.reservations);
+  const loading = useSelector((state: RootState) => state.reservation.loading);
+  const adding = useSelector((state: RootState) => state.reservation.adding);
+  const updating = useSelector((state: RootState) => state.reservation.updating);
+  const deleting = useSelector((state: RootState) => state.reservation.deleting);
+  const error = useSelector((state: RootState) => state.reservation.error);
+  const apiBaseUrl = process.env.REACT_APP_RESERVATION_API_BASE_URL;
 
   useEffect(() => {
     const fetchReservations = async () => {
+      dispatch(fetchReservationsStart());
       try {
-        // const response = await fetch('/api/reservations');
-        // if (!response.ok) {
-        //     throw new Error('Network response was not ok');
-        // }
-        // const data: Reservation[] = await response.json();
-
-        // Example data
-        const data: Reservation[] = [
-          {
-            id_reservation: "1",
-            id_user: "user1",
-            date_debut: "2023-10-01",
-            date_fin: "2023-10-10",
-            statut: "confirmed",
-            message_voyageur: "Looking forward to the stay!",
-            emplacement: {
-              id_emplacement: "1",
-              id_user: "user1",
-              localisation: "Paris",
-              caracteristique: "Spacieux et lumineux",
-              equipement: ["WiFi", "Climatisation"],
-              tarif: 100,
-              disponible: true,
-              moyenneAvis: 4.5,
-              photos: ["https://example.com/photo1.jpg"],
-              coordonnees: {
-                latitude: 48.8566,
-                longitude: 2.3522,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              },
-            },
-          },
-          {
-            id_reservation: "2",
-            id_user: "user2",
-            date_debut: "2023-11-01",
-            date_fin: "2023-11-10",
-            statut: "pending",
-            message_voyageur: "Please confirm my reservation.",
-            emplacement: {
-              id_emplacement: "2",
-              id_user: "user2",
-              localisation: "Lyon",
-              caracteristique: "Confortable et bien situé",
-              equipement: ["Parking", "Piscine"],
-              tarif: 80,
-              disponible: false,
-              moyenneAvis: 4.0,
-              photos: ["https://example.com/photo2.jpg"],
-              coordonnees: {
-                latitude: 45.764,
-                longitude: 4.8357,
-                latitudeDelta: 0.0922,
-                longitudeDelta: 0.0421,
-              },
-            },
-          },
-        ];
-
-        setReservations(data);
+        const response = await fetch(`${apiBaseUrl}/reservations`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data: Reservation[] = await response.json();
+        dispatch(fetchReservationsSuccess(data));
       } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
+        dispatch(fetchReservationsFailure((error as Error).message));
       }
     };
 
     fetchReservations();
-  }, []);
+  }, [dispatch, apiBaseUrl]);
 
-  const addReservation = (reservation: Reservation) => {
-    setReservations([...reservations, reservation]);
+  const addReservation = async (newReservation: Reservation) => {
+    dispatch(addReservationStart());
+    try {
+      const response = await fetch(`${apiBaseUrl}/reservations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newReservation),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const addedReservation = await response.json();
+      dispatch(addReservationSuccess(addedReservation));
+    } catch (error) {
+      console.error('Failed to add reservation:', error);
+      dispatch(addReservationFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de l\'ajout de la réservation',
+        text2: (error as Error).message,
+      });
+    }
   };
 
-  const updateReservation = (
-    id_reservation: string,
-    updatedReservation: Partial<Reservation>
-  ) => {
-    setReservations(
-      reservations.map((reservation) =>
-        reservation.id_reservation === id_reservation
-          ? { ...reservation, ...updatedReservation }
-          : reservation
-      )
-    );
+  const updateReservation = async (id_reservation: string, updatedReservation: Partial<Reservation>) => {
+    dispatch(updateReservationStart());
+    try {
+      const response = await fetch(`${apiBaseUrl}/reservations/${id_reservation}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedReservation),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updated = await response.json();
+      dispatch(updateReservationSuccess({ id: id_reservation, updatedReservation: updated }));
+    } catch (error) {
+      console.error('Failed to update reservation:', error);
+      dispatch(updateReservationFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de la mise à jour de la réservation',
+        text2: (error as Error).message,
+      });
+    }
   };
 
-  const deleteReservation = (id_reservation: string) => {
-    setReservations(
-      reservations.filter(
-        (reservation) => reservation.id_reservation !== id_reservation
-      )
-    );
+  const deleteReservation = async (id_reservation: string) => {
+    dispatch(deleteReservationStart());
+    try {
+      const response = await fetch(`${apiBaseUrl}/reservations/${id_reservation}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      dispatch(deleteReservationSuccess(id_reservation));
+    } catch (error) {
+      console.error('Failed to delete reservation:', error);
+      dispatch(deleteReservationFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de la suppression de la réservation',
+        text2: (error as Error).message,
+      });
+    }
   };
 
   const getReservationsByUser = (id_user: string) => {
-    return reservations.filter(
-      (reservation) => reservation.id_user === id_user
-    );
+    return reservations.filter(reservation => reservation.id_user === id_user);
   };
 
   const getReservationById = (id_reservation: string) => {
-    return (
-      reservations.find(
-        (reservation) => reservation.id_reservation === id_reservation
-      ) || null
-    );
+    return reservations.find(reservation => reservation.id_reservation === id_reservation) || null;
   };
 
   return {
     reservations,
     loading,
+    adding,
+    updating,
+    deleting,
     error,
     addReservation,
     updateReservation,

@@ -74,13 +74,13 @@ export default function Reservation_details({ route, navigation }) {
           </View>
 
           {endDate < currentDate ? (
-            <TouchableOpacity style={[styles.button, styles.reviewButton]} onPress={handleGiveReview}>
-              <Text style={styles.buttonText}>Donner un avis</Text>
+            <TouchableOpacity style={[styles.button, styles.reviewButton]} onPress={handleGiveReview} testID="give-review-button">
+              <Text style={styles.buttonText} testID="review-form-title">Donner un avis</Text>
               <Ionicons name="star" size={20} color="#fff" />
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={handleCancel}>
-              <Text style={styles.buttonText}>Annuler</Text>
+              <Text style={styles.buttonText} >Annuler</Text>
               <Ionicons name="close-circle" size={20} color="#fff" />
             </TouchableOpacity>
           )}
@@ -89,7 +89,7 @@ export default function Reservation_details({ route, navigation }) {
             <View style={styles.reviewForm}>
               <Text style={styles.formTitle}>Donner un avis</Text>
               <View style={styles.ratingContainer}>
-                <Rating size={40} rating={rating} onChange={handleChangeRating} />
+                <Rating size={40} rating={rating} onChange={handleChangeRating}   testID="rating-component" />
               </View>
               <TextInput
                 style={styles.input}

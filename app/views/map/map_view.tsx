@@ -267,6 +267,7 @@ export default function LocationMapView() {
                     ref={mapRef}
                     showsUserLocation={true}
                     onRegionChangeComplete={onRegionChangeComplete}
+                    testID="map-view"
                 >
                     {visibleMarkers.map((emplacement) => (
                         <Marker
@@ -319,7 +320,7 @@ export default function LocationMapView() {
                         />
                     </View>
                 )}
-                <TouchableOpacity style={map_view_styles.locationButton} onPress={centerUserLocation}>
+                <TouchableOpacity style={map_view_styles.locationButton} onPress={centerUserLocation} testID="location-button">
                     <Ionicons name="locate" size={24} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity style={map_view_styles.sliderToggleButton} onPress={() => setShowSlider(!showSlider)}>

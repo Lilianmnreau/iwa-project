@@ -22,7 +22,7 @@ import useEmplacementViewModel from '../../viewModels/emplacement_viewModel'; //
 export default function AddEmplacement({ navigation }) {
   const dispatch = useDispatch();
   const { addEmplacement } = useEmplacementViewModel();
-  const emplacement = useSelector((state: RootState) => state.emplacement);
+  const emplacement = useSelector((state: RootState) => state.emplacement.emplacements[0]);
 
   const handleAddEmplacement = () => {
     // Vérifier si certains attributs sont nuls
@@ -38,6 +38,15 @@ export default function AddEmplacement({ navigation }) {
     addEmplacement({
       ...emplacement,
       id_user: '1', // A changer
+      id_emplacement: emplacement.id_emplacement || '',
+      localisation: emplacement.localisation || '',
+      caracteristique: emplacement.caracteristique || '',
+      equipement: Array.isArray(emplacement.equipement) ? emplacement.equipement : [],
+      tarif: typeof emplacement.tarif === 'number' ? emplacement.tarif : 0,
+      disponible: emplacement.disponible || false,
+      moyenneAvis: emplacement.moyenneAvis || 0,
+      photos: emplacement.photos || [],
+      coordonnees: emplacement.coordonnees || { latitude: 0, longitude: 0, latitudeDelta: 0.0922, longitudeDelta: 0.0421 },
     });
 
     // Logique pour ajouter l'emplacement

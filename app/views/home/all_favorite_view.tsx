@@ -55,7 +55,7 @@ export default function FavoritesPage() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton} testID="go-back-button">
                     <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.title}>Vos emplacements favoris</Text>

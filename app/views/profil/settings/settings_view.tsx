@@ -6,7 +6,7 @@ import { logout } from '../../../store/profilSlice';
 import { useNavigation } from '@react-navigation/native';
 import { couleur } from '../../../color';
 import { useTranslation } from 'react-i18next';
-import { useUserViewModel } from '../../../viewModels/user_viewModel'; // Importer le hook
+import useUserViewModel from '../../../viewModels/user_viewModel';
 
 const SettingsView = () => {
   const { t } = useTranslation();

@@ -67,7 +67,7 @@ export default function AddArticleView({ navigation }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} testID="back-button">
           <Ionicons name="arrow-back" size={24} color="#37474F" />
         </TouchableOpacity>
         <Text style={styles.title}>Ajouter un article</Text>
@@ -100,7 +100,7 @@ export default function AddArticleView({ navigation }) {
 
       <View style={styles.imageContainer}>
         {images.map((image, index) => (
-          <View key={index} style={styles.imageWrapper}>
+          <View key={index} style={styles.imageWrapper} testID={`image-${index}`}>
             <Image source={{ uri: image.uri }} style={styles.image} />
             <TouchableOpacity
               style={styles.removeButton}
@@ -116,6 +116,7 @@ export default function AddArticleView({ navigation }) {
         mode="contained"
         onPress={handleSubmit}
         style={styles.submitButton}
+        testID="submit-button"
       >
         Soumettre
       </Button>

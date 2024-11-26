@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import useMessageViewModel from "../../viewModels/message.viewModel";
-import { sendMessage, markMessagesAsSeen } from "../../store/messagesSlice";
+import {  markMessagesAsSeen } from "../../store/messagesSlice";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useDispatch } from "react-redux";
 import { Message, MessageState } from "../../models/message.model";
@@ -80,7 +80,7 @@ export default function MessagesDetail({ route }: any) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()} testID="go-back-button">
             <Ionicons name="arrow-back" size={32} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
@@ -137,7 +137,7 @@ export default function MessagesDetail({ route }: any) {
           value={message}
           onChangeText={setMessage}
         />
-        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
+        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton} testID="send-button">
           <Ionicons name="send" size={24} color="#00796B" />
         </TouchableOpacity>
       </View>
