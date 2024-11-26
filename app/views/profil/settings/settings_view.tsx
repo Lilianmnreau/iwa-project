@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout } from '../../../store/profilSlice';
+import { logoutUser } from '../../../store/actions/profilActions';
 import { useNavigation } from '@react-navigation/native';
 import { couleur } from '../../../color';
 import { useTranslation } from 'react-i18next';
@@ -40,13 +40,13 @@ const SettingsView = () => {
     navigation.navigate('Translation' as never);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert(t('Logout'), t('Are you sure you want to logout?'), [
       { text: t('Cancel'), style: 'cancel' },
       {
         text: t('Logout'),
         onPress: () => {
-          dispatch(logout());
+          dispatch(logoutUser() as any);
         },
       },
     ]);

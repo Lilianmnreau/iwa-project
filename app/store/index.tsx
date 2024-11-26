@@ -1,10 +1,10 @@
 // src/store/index.ts
 import { configureStore } from '@reduxjs/toolkit';
-import profilReducer from './profilSlice';
-import messagesReducer from './messagesSlice'
-import emplacementReducer from './emplacementSlice';
-import articleReducer from './articleSlice'
-import reservationReducer from './reservationSlice';
+import profilReducer from './slices/profilSlice';
+import messagesReducer from './slices/messagesSlice'
+import emplacementReducer from './slices/emplacementSlice';
+import articleReducer from './slices/articleSlice'
+import reservationReducer from './slices/reservationSlice';
 
 export const store = configureStore({
     reducer: {

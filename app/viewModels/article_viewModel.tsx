@@ -16,7 +16,7 @@ import {
   deleteArticleStart,
   deleteArticleSuccess,
   deleteArticleFailure,
-} from '../store/articleSlice';
+} from '../store/slices/articleSlice';
 
 const useArticleViewModel = () => {
   const dispatch = useDispatch();

@@ -1,6 +1,6 @@
 // articleSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Article } from '../models/article.model';
+import { Article } from '../../models/article.model';
 
 interface ArticleState {
   articles: Article[];

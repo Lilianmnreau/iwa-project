@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { User } from '../models/user.model';
-import { Emplacement } from '../models/emplacement_model';
+import { User } from '../../models/user.model';
+import { Emplacement } from '../../models/emplacement_model';
 
 interface ProfilState {
   profil_notifications: number;
@@ -8,14 +8,16 @@ interface ProfilState {
   loading: boolean;
   error: string | null;
   users: User[];
+  userId : string | null;
 }
 
 const initialState: ProfilState = {
   profil_notifications: 78,
-  isLoggedIn: true,
+  isLoggedIn: false,
   loading: false,
   error: null,
   users: [],
+  userId : null,
 };
 
 const profilSlice = createSlice({
@@ -42,8 +44,9 @@ const profilSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    loginSuccess(state) {
+    loginSuccess(state,action: PayloadAction<{ userId: string;}> ) {
       state.isLoggedIn = true;
+      state.userId = action.payload.userId;
       state.loading = false;
     },
     loginFailure(state, action: PayloadAction<string>) {
@@ -68,6 +71,7 @@ const profilSlice = createSlice({
     },
     fetchUsersSuccess(state, action: PayloadAction<User[]>) {
       state.users = action.payload;
+      state.userId = action.payload[0].id;
       state.loading = false;
     },
     fetchUsersFailure(state, action: PayloadAction<string>) {
@@ -91,7 +95,7 @@ const profilSlice = createSlice({
       state.error = null;
     },
     updateUserSuccess(state, action: PayloadAction<{ id: string; updatedUser: User }>) {
-      const index = state.users.findIndex(user => user.id_user === action.payload.id);
+      const index = state.users.findIndex(user => user.id === action.payload.id);
       if (index !== -1) {
         state.users[index] = action.payload.updatedUser;
       }
@@ -106,7 +110,7 @@ const profilSlice = createSlice({
       state.error = null;
     },
     deleteUserSuccess(state, action: PayloadAction<string>) {
-      state.users = state.users.filter(user => user.id_user !== action.payload);
+      state.users = state.users.filter(user => user.id !== action.payload);
       state.loading = false;
     },
     deleteUserFailure(state, action: PayloadAction<string>) {

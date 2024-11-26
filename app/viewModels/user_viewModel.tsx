@@ -16,7 +16,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-} from '../store/profilSlice';
+} from '../store/slices/profilSlice';
 
 const useUserViewModel = () => {
   const dispatch = useDispatch();
@@ -69,10 +69,10 @@ const useUserViewModel = () => {
     }
   };
 
-  const updateUser = async (id_user: string, updatedUser: Partial<User>) => {
+  const updateUser = async (id: string, updatedUser: Partial<User>) => {
     dispatch(updateUserStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/users/${id_user}`, {
+      const response = await fetch(`${apiBaseUrl}/users/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ const useUserViewModel = () => {
         throw new Error('Network response was not ok');
       }
       const updated = await response.json();
-      dispatch(updateUserSuccess({ id: id_user, updatedUser: updated }));
+      dispatch(updateUserSuccess({ id: id, updatedUser: updated }));
     } catch (error) {
       console.error('Failed to update user:', error);
       dispatch(updateUserFailure((error as Error).message));
@@ -95,16 +95,16 @@ const useUserViewModel = () => {
     }
   };
 
-  const deleteUser = async (id_user: string) => {
+  const deleteUser = async (id: string) => {
     dispatch(deleteUserStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/users/${id_user}`, {
+      const response = await fetch(`${apiBaseUrl}/users/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-      dispatch(deleteUserSuccess(id_user));
+      dispatch(deleteUserSuccess(id));
     } catch (error) {
       console.error('Failed to delete user:', error);
       dispatch(deleteUserFailure((error as Error).message));
@@ -116,8 +116,8 @@ const useUserViewModel = () => {
     }
   }; 
 
-  const getUserById = (id_user: string) => {
-    return users.find(user => user.id_user === id_user) || null;
+  const getUserById = (id: string) => {
+    return users.find(user => user.id === id) || null;
   };
 
   return {

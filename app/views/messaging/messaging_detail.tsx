@@ -12,7 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import useMessageViewModel from "../../viewModels/message.viewModel";
-import {  markMessagesAsSeen } from "../../store/messagesSlice";
+import {  markMessagesAsSeen } from "../../store/slices/messagesSlice";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useDispatch } from "react-redux";
 import { Message, MessageState } from "../../models/message.model";

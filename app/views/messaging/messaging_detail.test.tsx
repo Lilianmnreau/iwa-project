@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import useMessageViewModel from '../../viewModels/message.viewModel';
-import { markMessagesAsSeen } from '../../store/messagesSlice';
+import { markMessagesAsSeen } from '../../store/slices/messagesSlice';
 import { fireEvent, render } from '@testing-library/react-native';
 import MessagesDetail from './messaging_detail';
 

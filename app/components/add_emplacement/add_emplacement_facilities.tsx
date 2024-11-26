@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { RadioButton, List } from 'react-native-paper';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSelector, useDispatch } from 'react-redux';
-import { setEquipement } from '../../store/addEmplacementSlice'; // Assurez-vous que le chemin est correct
-import { selectEquipement } from '../../store/selectors'; // Importer le sélecteur mémorisé
+import { setEquipement } from '../../store/slices/addEmplacementSlice'; // Assurez-vous que le chemin est correct
+import { selectEquipement } from '../../store/slices/selectors'; // Importer le sélecteur mémorisé
 
 const iconMap = {
     "Wi-Fi": "wifi",

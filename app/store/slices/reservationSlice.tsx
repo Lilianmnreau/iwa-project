@@ -1,6 +1,6 @@
 // reservationSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Reservation } from '../models/reservation.model';
+import { Reservation } from '../../models/reservation.model';
 
 interface ReservationState {
   reservations: Reservation[];

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Emplacement } from "../models/emplacement_model";
+import { Emplacement } from "../../models/emplacement_model";
 
 const initialState: Emplacement = {
     id_emplacement: '',

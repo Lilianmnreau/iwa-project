@@ -13,7 +13,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
 import { Article } from "../../models/article.model";
-import { fetchArticlesStart, fetchArticlesSuccess, fetchArticlesFailure } from "../../store/articleSlice";
+import { fetchArticlesStart, fetchArticlesSuccess, fetchArticlesFailure } from "../../store/slices/articleSlice";
 import Toast from 'react-native-toast-message';
 import SkeletonArticle from './skeleton_article'; // Assurez-vous d'importer le composant SkeletonArticle
 

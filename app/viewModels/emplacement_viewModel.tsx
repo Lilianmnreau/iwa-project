@@ -14,7 +14,7 @@ import {
   deleteEmplacementStart,
   deleteEmplacementSuccess,
   deleteEmplacementFailure,
-} from '../store/emplacementSlice';
+} from '../store/slices/emplacementSlice';
 import { Emplacement } from '../models/emplacement_model';
 
 const useEmplacementViewModel = () => {

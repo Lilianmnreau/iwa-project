@@ -16,7 +16,7 @@ import { couleur } from "../../color";
 import Toast from 'react-native-toast-message'; // Importer Toast
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store'; // Assurez-vous que le chemin est correct
-import { resetEmplacement } from '../../store/addEmplacementSlice'; // Importer resetEmplacement
+import { resetEmplacement } from '../../store/slices/addEmplacementSlice'; // Importer resetEmplacement
 import useEmplacementViewModel from '../../viewModels/emplacement_viewModel'; // Importer le hook
 
 export default function AddEmplacement({ navigation }) {
