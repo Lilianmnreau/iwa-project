@@ -106,7 +106,7 @@ export default function HomepageArticles() {
       <FlatList
         data={articles.slice(0, ARTICLE_LIMIT)} // Affichez seulement les 2 premiers articles ici
         renderItem={renderItem}
-        keyExtractor={(item) => item.id_article}
+        keyExtractor={(item) => item.idArticle}
         contentContainerStyle={styles.flatListContainer}
       />
       <View style={styles.buttonContainer}>
