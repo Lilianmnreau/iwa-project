@@ -16,6 +16,7 @@ import { Article } from "../../models/article.model";
 import { fetchArticlesStart, fetchArticlesSuccess, fetchArticlesFailure } from "../../store/slices/articleSlice";
 import Toast from 'react-native-toast-message';
 import SkeletonArticle from './skeleton_article'; // Assurez-vous d'importer le composant SkeletonArticle
+import API from "../../utils/api";
 
 export default function HomepageArticles() {
   const navigation = useNavigation();
@@ -29,11 +30,8 @@ export default function HomepageArticles() {
   const fetchArticles = async () => {
     dispatch(fetchArticlesStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/articles`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data: Article[] = await response.json();
+      const response = await API.get("/articles");
+      const data: Article[] =  response.data;
       dispatch(fetchArticlesSuccess(data));
     } catch (error) {
       dispatch(fetchArticlesFailure((error as Error).message));

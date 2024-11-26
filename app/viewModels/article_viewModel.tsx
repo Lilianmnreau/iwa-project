@@ -18,6 +18,8 @@ import {
   deleteArticleFailure,
 } from '../store/slices/articleSlice';
 
+import API from '../utils/api';
+
 const useArticleViewModel = () => {
   const dispatch = useDispatch();
   const articles = useSelector((state: RootState) => state.article.articles);
@@ -49,17 +51,8 @@ const useArticleViewModel = () => {
   const addNewArticle = async (newArticle: Article) => {
     dispatch(addArticleStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/articles`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newArticle),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const addedArticle = await response.json();
+      const response = await API.post("/articles", newArticle)
+      const addedArticle = response.data
       dispatch(addArticleSuccess(addedArticle));
     } catch (error) {
       console.error('Failed to add article:', error);
