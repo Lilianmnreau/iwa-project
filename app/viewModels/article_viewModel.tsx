@@ -34,11 +34,8 @@ const useArticleViewModel = () => {
     const fetchArticles = async () => {
       dispatch(fetchArticlesStart());
       try {
-        const response = await fetch(`${apiBaseUrl}/articles`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: Article[] = await response.json();
+        const response = await API.get('/articles')
+        const data: Article[] = response.data;
         dispatch(fetchArticlesSuccess(data));
       } catch (error) {
         dispatch(fetchArticlesFailure((error as Error).message));
