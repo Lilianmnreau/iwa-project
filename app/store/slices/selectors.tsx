@@ -1,6 +1,6 @@
 import { createSelector } from 'reselect';
-import { RootState } from '.';
-import { Emplacement } from '../models/emplacement_model';
+import { RootState } from '..';
+import { Emplacement } from '../../models/emplacement_model';
 
 const selectEmplacementState = (state: RootState): Emplacement => state.emplacement;
 

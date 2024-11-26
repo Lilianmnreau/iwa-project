@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setTarif } from '../../store/addEmplacementSlice'; // Assurez-vous que le chemin est correct
-import { selectTarif } from '../../store/selectors'; // Importer le sélecteur mémorisé
+import { setTarif } from '../../store/slices/addEmplacementSlice'; // Assurez-vous que le chemin est correct
+import { selectTarif } from '../../store/slices/selectors'; // Importer le sélecteur mémorisé
 
 export default function AddEmplacementPrice() {
     const dispatch = useDispatch();

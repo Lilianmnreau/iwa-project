@@ -222,12 +222,6 @@ export default function ProfilView() {
                   {userInfo?.telephone || "Non défini"}
                 </Text>
               </Text>
-              <Text style={styles.infoText}>
-                Rôle:{" "}
-                <Text style={styles.infoValue}>
-                  {userInfo?.role || "Non défini"}
-                </Text>
-              </Text>
             </>
           )}
         </View>

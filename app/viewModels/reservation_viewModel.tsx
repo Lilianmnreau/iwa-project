@@ -16,7 +16,7 @@ import {
   deleteReservationStart,
   deleteReservationSuccess,
   deleteReservationFailure,
-} from '../store/reservationSlice';
+} from '../store/slices/reservationSlice';
 
 const useReservationViewModel = () => {
   const dispatch = useDispatch();

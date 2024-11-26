@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { setCaracteristique } from '../../store/addEmplacementSlice'; // Assurez-vous que le chemin est correct
-import { selectCaracteristique } from '../../store/selectors'; // Importer le sélecteur mémorisé
+import { setCaracteristique } from '../../store/slices/addEmplacementSlice'; // Assurez-vous que le chemin est correct
+import { selectCaracteristique } from '../../store/slices/selectors'; // Importer le sélecteur mémorisé
 
 export default function AddEmplacementDescription() {
     const dispatch = useDispatch();

@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { RootState } from "../../store";
+import { loginUser } from "../../store/actions/profilActions";
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (email === '' || password === '') {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
-    } else {
-      Alert.alert('Connexion réussie', `Bienvenue ${email}`);
+  const dispatch = useDispatch();
+
+  const { loading, error } = useSelector((state: RootState) => state.profil);
+
+  const handleLogin = async () => {
+    if (email === "" || password === "") {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+      return;
+    }
+
+    try {
+      await dispatch(loginUser({ email, password }) as any);
+
+      navigation.navigate("Home"); // Replace 'Home' with your main screen
+    } catch (err: any) {
+      Alert.alert("Erreur", error || "Connexion échouée.");
     }
   };
 

@@ -13,7 +13,7 @@ import {
   deleteMessageSuccess,
   deleteMessageFailure,
   markMessagesAsSeen,
-} from '../store/messagesSlice';
+} from '../store/slices/messagesSlice';
 
 const useMessagesViewModel = () => {
   const dispatch = useDispatch();

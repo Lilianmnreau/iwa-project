@@ -9,7 +9,7 @@ import useEmplacementFavoriteViewModel from '../../viewModels/emplacement_favori
 import { Emplacement } from '../../models/emplacement_model';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
-import { fetchFavoritesStart, fetchFavoritesSuccess, fetchFavoritesFailure } from '../../store/favoritesSlice';
+import { fetchFavoritesStart, fetchFavoritesSuccess, fetchFavoritesFailure } from '../../store/slices/favoritesSlice';
 
 export default function HomepageFavorites() {
     const { emplacements, loading, error, getEmplacementById } = useEmplacementViewModel(); // Utiliser le ViewModel

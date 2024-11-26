@@ -4,8 +4,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Button } from 'react-native-paper'; // Utilisation de Button de react-native-paper pour la cohérence
 import { useSelector, useDispatch } from 'react-redux';
-import { setPhotos } from '../../store/addEmplacementSlice'; // Assurez-vous que le chemin est correct
-import { selectPhotos } from '../../store/selectors'; // Importer le sélecteur mémorisé
+import { setPhotos } from '../../store/slices/addEmplacementSlice'; // Assurez-vous que le chemin est correct
+import { selectPhotos } from '../../store/slices/selectors'; // Importer le sélecteur mémorisé
 
 export default function AddEmplacementAddPhoto() {
     const dispatch = useDispatch();
