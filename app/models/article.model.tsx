@@ -1,5 +1,5 @@
 export type Article = {
-    id_article: string;
+    idArticle: string;
     titre: string;
     description: string;
     date: string;

@@ -110,7 +110,7 @@ const useArticleViewModel = () => {
   };
 
   const getArticleById = (id_article: string) => {
-    return articles.find(article => article.id_article === id_article) || null;
+    return articles.find(article => article.idArticle === id_article) || null;
   };
 
   return {
