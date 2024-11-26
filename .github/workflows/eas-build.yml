@@ -1,0 +1,40 @@
+name: EAS Build and APK Deployment
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build APK for Android
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the code
+      - uses: actions/checkout@v4
+
+      # 2. Setup Node.js environment
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: npm
+
+      # 3. Setup Expo and EAS
+      - name: Setup Expo and EAS
+        uses: expo/expo-github-action@v8
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        with:
+          eas-version: latest
+
+      # 4. Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # 5. Build the APK using EAS
+      - name: Build APK with EAS
+        working-directory: ./app
+        run: eas build --platform android --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
