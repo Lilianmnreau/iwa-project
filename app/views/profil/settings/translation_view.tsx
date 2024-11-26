@@ -32,7 +32,7 @@ export default function TranslationView() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}  testID="back-button">
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.title}>{t('choose_language')}</Text>
@@ -45,7 +45,7 @@ export default function TranslationView() {
         >
           <Text style={styles.languageText}>{language.label}</Text>
           {selectedLanguage === language.code && (
-            <Ionicons name="checkmark" size={24} color="green" />
+            <Ionicons name="checkmark" size={24} color="green" testID={`checkmark-icon-${language.code}`}/>
           )}
         </TouchableOpacity>
       ))}

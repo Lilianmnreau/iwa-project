@@ -4,6 +4,7 @@ import profilReducer from './profilSlice';
 import messagesReducer from './messagesSlice'
 import emplacementReducer from './emplacementSlice';
 import articleReducer from './articleSlice'
+import reservationReducer from './reservationSlice';
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         messages : messagesReducer,
         emplacement: emplacementReducer,
         article: articleReducer,
+        reservation: reservationReducer,
     },
 });
 

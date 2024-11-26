@@ -21,23 +21,47 @@ export default function AllEmplacementReservation() {
     });
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} testID="all-emplacement-reservations">
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton} activeOpacity={1}>
+                <TouchableOpacity 
+                    onPress={() => navigation.goBack()} 
+                    style={styles.backButton} 
+                    testID="back-button"
+                    activeOpacity={1}
+                >
                     <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
                 <Text style={styles.title}>Toutes les réservations</Text>
             </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterContainer}>
-                <TouchableOpacity onPress={() => setSortOrder('recent')} style={styles.filterButton} activeOpacity={1}>
+            <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false} 
+                style={styles.filterContainer}
+                testID="filter-container"
+            >
+                <TouchableOpacity 
+                    onPress={() => setSortOrder('recent')} 
+                    style={styles.filterButton} 
+                    testID="recent-filter"
+                    activeOpacity={1}
+                >
                     <Text style={styles.filterText}>Les plus récentes</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setSortOrder('oldest')} style={styles.filterButton} activeOpacity={1}>
+                <TouchableOpacity 
+                    onPress={() => setSortOrder('oldest')} 
+                    style={styles.filterButton} 
+                    testID="oldest-filter"
+                    activeOpacity={1}
+                >
                     <Text style={styles.filterText}>Les plus anciennes</Text>
                 </TouchableOpacity>
             </ScrollView>
             {sortedReservations.map(reservation => (
-                <EmplacementReservationCell key={reservation.id} reservation={reservation} />
+                <EmplacementReservationCell 
+                    key={reservation.id} 
+                    reservation={reservation} 
+                    testID={`reservation-${reservation.id}`} 
+                />
             ))}
         </View>
     );

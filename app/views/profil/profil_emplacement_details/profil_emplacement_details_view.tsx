@@ -108,6 +108,7 @@ export default function ProfilEmplacementDetails({ route }) {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
+          testID="back-button"
         >
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
@@ -170,12 +171,13 @@ export default function ProfilEmplacementDetails({ route }) {
               onChangeText={setPhotos}
               placeholder="Photos (URLs séparés par des virgules)"
             />
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <TouchableOpacity style={styles.saveButton} onPress={handleSave} testID="save-button">
               <Text style={styles.buttonText}>Sauvegarder</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.deleteButton}
               onPress={handleDelete}
+              testID="delete-button"
             >
               <Text style={styles.buttonText}>Supprimer</Text>
             </TouchableOpacity>
@@ -188,6 +190,7 @@ export default function ProfilEmplacementDetails({ route }) {
                 size={24}
                 color="#00796B"
                 onPress={() => setIsEditing(true)}
+                testID="edit-button"
               />
             </View>
 
