@@ -34,7 +34,6 @@ const useUserViewModel = () => {
       .then((response) => {
         const updated = response.data;
         updated.password = null;
-        console.log("reset pw? " + updated.password);
         dispatch(fetchUserSuccess(updated));
       })
       .catch((error) => {
@@ -60,10 +59,8 @@ const useUserViewModel = () => {
     if (updatedUser.password === null){
       delete updatedUser.password
     }
-    console.log("Updating with payload : " + JSON.stringify(updatedUser))
       API.put(`/users/${id}`, updatedUser).then((response) => {
         const updated = response.data;
-        console.log({ responseUpdate: response.data });
         dispatch(fetchUserSuccess(updated));
       }).catch((error) => {
         console.error("Failed to update user:", error);
@@ -81,9 +78,6 @@ const useUserViewModel = () => {
 
   const updateUserFields = (updatedFields: Partial<User>) => {
     // Merge the updated fields with the existing user object.
-    if (updatedFields.password !== null) {
-      console.log(updatedFields.password);
-    }
     const updatedUser = { ...user, ...updatedFields };
 
     // Dispatch the updated user to the store.x

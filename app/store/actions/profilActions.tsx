@@ -61,7 +61,6 @@ export const loginUser = createAsyncThunk(
   "profil/login",
   ({ email, password }: { email: string; password: string }, { dispatch }) => {
     dispatch(fetchProfilStart());
-    console.log("Request to API");
     // First API call: Authenticate and get JWT token
     API.post("/auth/login", { email, password })
       .then((loginResponse) => {
