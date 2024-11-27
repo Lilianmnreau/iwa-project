@@ -11,6 +11,7 @@ import Slider from '@react-native-community/slider';
 import Toast from 'react-native-toast-message';
 import map_view_styles from './map_view_style';
 import { RootState } from '../../store';
+import API from '../../utils/api';
 import {
   fetchEmplacementsStart,
   fetchEmplacementsSuccess,
@@ -36,6 +37,7 @@ export default function LocationMapView() {
     const emplacements = useSelector((state: RootState) => state.emplacement.emplacements);
     const loading = useSelector((state: RootState) => state.emplacement.loading);
     const error = useSelector((state: RootState) => state.emplacement.error);
+    const apiBaseUrl = process.env.REACT_APP_ARTICLE_API_BASE_URL;
 
     const INITIAL_REGION = {
         latitude: 43.6,
@@ -49,23 +51,26 @@ export default function LocationMapView() {
         longitudeDelta: 0.3,
     };
 
-    useEffect(() => {
-        const fetchEmplacements = async () => {
-            dispatch(fetchEmplacementsStart());
-            try {
-                const response = await fetch(`${process.env.REACT_APP_EMPLACEMENT_API_BASE_URL}/emplacements`);
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                const data: Emplacement[] = await response.json();
-                dispatch(fetchEmplacementsSuccess(data));
-            } catch (error) {
-                dispatch(fetchEmplacementsFailure((error as Error).message));
-            }
-        };
-
-        fetchEmplacements();
-    }, [dispatch]);
+    const fetchArticles = async () => {
+        dispatch(fetchEmplacementsStart());
+        try {
+          const response = await API.get("/api/emplacements");
+          const data: Emplacement[] =  response.data;
+          dispatch(fetchEmplacementsSuccess(data));
+        } catch (error) {
+          dispatch(fetchEmplacementsFailure((error as Error).message));
+            Toast.show({
+              type: 'error',
+              text1: 'Échec de la récupération des articles',
+            });
+        }
+      };
+    
+      useEffect(() => {
+        if (emplacements.length === 0) {
+          fetchArticles();
+        }
+      }, [dispatch, emplacements.length, apiBaseUrl]);
 
     useEffect(() => {
         if (loading) {

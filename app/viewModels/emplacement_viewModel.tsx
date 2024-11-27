@@ -1,6 +1,9 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Toast from "react-native-toast-message";
+import { Emplacement } from "../models/emplacement_model";
+import { RootState } from "../store";
+import API from "../utils/api";
 import {
   fetchEmplacementsStart,
   fetchEmplacementsSuccess,
@@ -14,106 +17,113 @@ import {
   deleteEmplacementStart,
   deleteEmplacementSuccess,
   deleteEmplacementFailure,
-} from '../store/slices/emplacementSlice';
-import { Emplacement } from '../models/emplacement_model';
+} from "../store/slices/emplacementSlice";
 
 const useEmplacementViewModel = () => {
   const dispatch = useDispatch();
   const emplacements = useSelector((state: RootState) => state.emplacement.emplacements);
   const loading = useSelector((state: RootState) => state.emplacement.loading);
   const error = useSelector((state: RootState) => state.emplacement.error);
-  const apiBaseUrl = process.env.EMPLACEMENT_MICROSERVICE_URL;
 
   useEffect(() => {
-    const fetchEmplacements = async () => {
-      dispatch(fetchEmplacementsStart());
-      try {
-        const response = await fetch(`${apiBaseUrl}/emplacements`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: Emplacement[] = await response.json();
-        dispatch(fetchEmplacementsSuccess(data));
-      } catch (error) {
-        dispatch(fetchEmplacementsFailure((error as Error).message));
-      }
-    };
+    dispatch(fetchEmplacementsStart());
+    API.get(`/emplacements`)
+      .then((response) => {
+        dispatch(fetchEmplacementsSuccess(response.data));
+      })
+      .catch((error) => {
+        console.error("Failed to fetch emplacements:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
 
-    fetchEmplacements();
-  }, [dispatch, apiBaseUrl]);
-
-  const getEmplacementById = (id_emplacement: string) => {
-    return emplacements.find(emplacement => emplacement.id_emplacement === id_emplacement) || null;
-  };
-
-  const getEmplacementsByUserId = (id_user: string) => {
-    return emplacements.filter(emplacement => emplacement.id_user === id_user);
-  };
-
-  const deleteEmplacement = async (id_emplacement: string) => {
-    dispatch(deleteEmplacementStart());
-    try {
-      const response = await fetch(`${apiBaseUrl}/emplacements/${id_emplacement}`, {
-        method: 'DELETE',
+        dispatch(fetchEmplacementsFailure(errorMessage));
+        Toast.show({
+          type: "error",
+          text1: "Échec de la récupération des emplacements",
+          text2: errorMessage,
+        });
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      dispatch(deleteEmplacementSuccess(id_emplacement));
-    } catch (error) {
-      dispatch(deleteEmplacementFailure((error as Error).message));
-    }
-  };
+  }, [dispatch]);
 
   const addEmplacement = async (newEmplacement: Emplacement) => {
     dispatch(addEmplacementStart());
-    try {
-      const response = await fetch(`${apiBaseUrl}/emplacements`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newEmplacement),
+    API.post(`/api/emplacements`, newEmplacement)
+      .then((response) => {
+        dispatch(addEmplacementSuccess(response.data));
+        Toast.show({
+          type: "success",
+          text1: "Emplacement ajouté avec succès",
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to add emplacement:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+
+        dispatch(addEmplacementFailure(errorMessage));
+        Toast.show({
+          type: "error",
+          text1: "Échec de l'ajout de l'emplacement",
+          text2: errorMessage,
+        });
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const addedEmplacement = await response.json();
-      dispatch(addEmplacementSuccess(addedEmplacement));
-    } catch (error) {
-      dispatch(addEmplacementFailure((error as Error).message));
-    }
   };
 
-  const updateEmplacement = async (id_emplacement: string, updatedEmplacement: Partial<Emplacement>) => {
+  const updateEmplacement = async (idEmplacement: string, updatedFields: Partial<Emplacement>) => {
     dispatch(updateEmplacementStart());
-    try {
-      const response = await fetch(`${apiBaseUrl}/emplacements/${id_emplacement}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedEmplacement),
+    API.put(`/api/emplacements/${idEmplacement}`, updatedFields)
+      .then((response) => {
+        dispatch(updateEmplacementSuccess({ id: idEmplacement, updatedEmplacement: response.data }));
+        Toast.show({
+          type: "success",
+          text1: "Emplacement mis à jour avec succès",
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to update emplacement:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+
+        dispatch(updateEmplacementFailure(errorMessage));
+        Toast.show({
+          type: "error",
+          text1: "Échec de la mise à jour de l'emplacement",
+          text2: errorMessage,
+        });
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const updated = await response.json();
-      dispatch(updateEmplacementSuccess({ id: id_emplacement, updatedEmplacement: updated }));
-    } catch (error) {
-      dispatch(updateEmplacementFailure((error as Error).message));
-    }
+  };
+
+  const deleteEmplacement = async (idEmplacement: string) => {
+    dispatch(deleteEmplacementStart());
+    API.delete(`/api/emplacements/${idEmplacement}`)
+      .then(() => {
+        dispatch(deleteEmplacementSuccess(idEmplacement));
+        Toast.show({
+          type: "success",
+          text1: "Emplacement supprimé avec succès",
+        });
+      })
+      .catch((error) => {
+        console.error("Failed to delete emplacement:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+
+        dispatch(deleteEmplacementFailure(errorMessage));
+        Toast.show({
+          type: "error",
+          text1: "Échec de la suppression de l'emplacement",
+          text2: errorMessage,
+        });
+      });
   };
 
   return {
     emplacements,
     loading,
     error,
-    getEmplacementById,
-    getEmplacementsByUserId,
-    deleteEmplacement,
-    updateEmplacement,
     addEmplacement,
+    updateEmplacement,
+    deleteEmplacement,
   };
 };
 
