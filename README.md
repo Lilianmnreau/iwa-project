@@ -67,6 +67,6 @@ Tab Navigator : Pour les onglets principaux comme réservations, emplacements, e
 
 **Auteurs**
 
-Romain Mezghenna : romain24.mezghenna01@gmail.com
-Robin Vincent : robin.vin100@gmail.com
-Lilian Monnereau : lilian.monnereau@gmail.com
+Romain Mezghenna : romain24.mezghenna01@gmail.com  
+Robin Vincent : robin.vin100@gmail.com  
+Lilian Monnereau : lilian.monnereau@gmail.com  
