@@ -45,7 +45,7 @@ npm install
 **Étape 3 : Lancer l'application**  
 Utilisez Expo pour démarrer le projet :  
 
-expo start  
+npx expo start  
 
 **Étape 4 : Tester l'application**    
 Sur un appareil physique : Scannez le QR code affiché dans le terminal avec l'application Expo Go.  
