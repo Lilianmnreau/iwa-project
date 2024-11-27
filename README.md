@@ -24,7 +24,9 @@ Avant de commencer, assurez-vous d'avoir les outils suivants installés :
 npm ou yarn  
 Expo CLI  
 npm install -g expo-cli  
-Un émulateur ou un appareil physique configuré :  
+
+Un émulateur ou un appareil physique configuré : 
+
 iOS : Xcode et simulateur iOS.  
 Android : Android Studio et un appareil virtuel.  
 
