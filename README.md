@@ -7,7 +7,6 @@ Ce projet frontend est une application mobile développée avec React Native, ut
 - Fonctionnalités principales  
 - Prérequis  
 - Installation et lancement  
-- Contributions  
 
 ## **Fonctionnalités principales**
 
@@ -65,14 +64,6 @@ La navigation est gérée avec React Navigation :
 
 Stack Navigator : Pour les vues de connexion, inscription, etc.  
 Tab Navigator : Pour les onglets principaux comme réservations, emplacements, et messagerie.  
-
-## **Contributions**
-
-Les contributions sont les bienvenues ! Voici comment participer :  
-
-Forkez le dépôt.  
-Créez une branche pour vos modifications (feature/nouvelle-fonctionnalite).  
-Soumettez une pull request.  
 
 **Auteurs**
 
