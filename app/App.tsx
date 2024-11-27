@@ -1,7 +1,7 @@
 import 'intl-pluralrules'; // Importer le polyfill
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Provider, useSelector, useDispatch } from "react-redux";
+import { Provider, useSelector, useDispatch, TypedUseSelectorHook } from "react-redux";
 import { store } from './store';
 import { NavigationContainer } from '@react-navigation/native';
 import Navbar from './layout/navbar';
@@ -12,19 +12,21 @@ import { initializeProfil } from './store/actions/profilActions';
 import Toast from 'react-native-toast-message';
 import './i18n'; // Importer la configuration i18n
 import { useNotificationViewModel } from './viewModels/notification.viewModel';
-
+import { AppDispatch } from './store';
 const Stack = createStackNavigator();
 
 function AppContent() {
-  const dispatch = useDispatch();
+  
+  const useAppDispatch = () => useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     // Appel de la fonction initializeProfil au chargement de l'application
     dispatch(initializeProfil())
   }, [dispatch]);
 
-  
-  const { notifications, markAsRead } = useNotificationViewModel(userId);
+  // récuperer l'id de l'user connecté pour charger ses notifications
+  const { notifications, markAsRead } = useNotificationViewModel(1);
 
   const markAllAsRead = () => {
     notifications.forEach((notif) => {
@@ -36,7 +38,7 @@ function AppContent() {
 
   return (
     <NavigationContainer>
-      <Header />
+      <Header  notifications={notifications} onMarkAsRead={markAsRead}/>
       <Navbar />
       <Toast />
     </NavigationContainer>

@@ -4,7 +4,7 @@ import { Notification } from '../models/notification.model';
 
 interface NotificationListProps {
   notifications: Notification[];
-  onMarkAsRead: () => void; // Fonction pour marquer toutes les notifications comme lues
+  onMarkAsRead: (notificationId: number) => Promise<void>; // Fonction pour marquer toutes les notifications comme lues
 }
 
 export default function Header({ notifications, onMarkAsRead }: NotificationListProps) {
