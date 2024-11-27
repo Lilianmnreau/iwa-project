@@ -1,12 +1,18 @@
 export interface Emplacement {
-  id_emplacement: string | null;
-  id_user: string | null;
-  localisation: string | null;
-  caracteristique: string | null;
-  equipement: string[]; // Modifié pour être un tableau de chaînes
-  tarif: number | null;
-  disponible: boolean | null;
-  moyenneAvis: number | null;
-  photos: string[] | null;
-  coordonnees: { latitude: number; longitude: number; latitudeDelta: number; longitudeDelta: number } | null;
+  idEmplacement: number; // Id de l'emplacement
+  idUser: number; // Id de l'utilisateur propriétaire
+  localisation: string; // Localisation de l'emplacement
+  caracteristique: string; // Description de l'emplacement
+  equipements: string[]; // Liste des équipements disponibles
+  services: string[]; // Liste des services disponibles
+  tarif: number; // Tarif en euros
+  disponible: boolean; // Disponibilité de l'emplacement
+  moyenneAvis: number; // Moyenne des avis
+  photos: string[]; // Liste des URLs des photos
+  coordonnees: {
+    latitude: number;
+    longitude: number;
+    latitudeDelta: number;
+    longitudeDelta: number;
+  }; // Coordonnées géographiques
 }

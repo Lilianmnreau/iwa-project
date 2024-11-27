@@ -1,49 +1,70 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Emplacement } from '../../models/emplacement_model';
 
-export default function EmplacementDetailsFacilities({ equipment }) {
-    const iconMap = {
-        "Wi-Fi": "wifi",
-        "Piscine": "water",
-        "Parking": "car",
-        "Animaux acceptés": "paw",
-        "Terrasse": "home",
-        "Barbecue": "bonfire",
-        "Électricité": "flash",
-        "Eau potable": "water",
-        "Poubelles": "trash",
-        "Toit": "home",
-        "Feu de camp": "bonfire",
-    };
+interface EmplacementDetailsDescriptionProps {
+  emplacement: Emplacement;
+}
 
-    // Diviser la liste des équipements en deux colonnes
-    const column1 = equipment.slice(0, Math.ceil(equipment.length / 2));
-    const column2 = equipment.slice(Math.ceil(equipment.length / 2));
+export default function EmplacementDetailsFacilities({
+  emplacement,
+}: EmplacementDetailsDescriptionProps) {
+    const equipements = emplacement.equipements
+  const iconMap = {
+    "Wi-Fi": "wifi",
+    Piscine: "water",
+    Parking: "car",
+    "Animaux acceptés": "paw",
+    Terrasse: "home",
+    Barbecue: "bonfire",
+    Électricité: "flash",
+    "Eau potable": "water",
+    Poubelles: "trash",
+    Toit: "home",
+    "Feu de camp": "bonfire",
+  };
+  // Vérifiez si `equipements` est bien un tableau avant d'utiliser `.slice`
+  if (!Array.isArray(equipements)) {
+    console.error("Les équipements doivent être un tableau.");
+    return null; // Ou retournez une vue vide ou un message d'erreur
+  }
 
-    return (
-        <View style={styles.container}>
-            {/* Première colonne d'équipements */}
-            <View style={styles.column}>
-                {column1.map((equip, index) => (
-                    <View style={styles.item} key={index}>
-                        <Ionicons name={iconMap[equip] || 'help-circle'} size={20} color="#4B8B3B" />
-                        <Text style={styles.itemText}>{equip}</Text>
-                    </View>
-                ))}
-            </View>
+  // Diviser la liste des équipements en deux colonnes
+  const column1 = equipements.slice(0, Math.ceil(equipements.length / 2));
+  const column2 = equipements.slice(Math.ceil(equipements.length / 2));
 
-            {/* Deuxième colonne d'équipements */}
-            <View style={styles.column}>
-                {column2.map((equip, index) => (
-                    <View style={styles.item} key={index}>
-                        <Ionicons name={iconMap[equip] || 'help-circle'} size={20} color="#4B8B3B" />
-                        <Text style={styles.itemText}>{equip}</Text>
-                    </View>
-                ))}
-            </View>
-        </View>
-    );
+  return (
+    <View style={styles.container}>
+      {/* Première colonne d'équipements */}
+      <View style={styles.column}>
+        {column1.map((equip, index) => (
+          <View style={styles.item} key={index}>
+            <Ionicons
+              name={iconMap[equip] || "help-circle"}
+              size={20}
+              color="#4B8B3B"
+            />
+            <Text style={styles.itemText}>{equip}</Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Deuxième colonne d'équipements */}
+      <View style={styles.column}>
+        {column2.map((equip, index) => (
+          <View style={styles.item} key={index}>
+            <Ionicons
+              name={iconMap[equip] || "help-circle"}
+              size={20}
+              color="#4B8B3B"
+            />
+            <Text style={styles.itemText}>{equip}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

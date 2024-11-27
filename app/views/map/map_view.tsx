@@ -27,7 +27,7 @@ export default function LocationMapView() {
     const [query, setQuery] = useState('');
     const [filteredCities, setFilteredCities] = useState([]);
     const [locationGranted, setLocationGranted] = useState(false);
-    const [radius, setRadius] = useState(10); // Rayon en kilomètres
+    const [radius, setRadius] = useState(200); // Rayon en kilomètres
     const [userLocation, setUserLocation] = useState(null);
     const [showSlider, setShowSlider] = useState(false); // État pour contrôler la visibilité du slider
     const [visibleMarkers, setVisibleMarkers] = useState([]);
@@ -37,8 +37,6 @@ export default function LocationMapView() {
     const emplacements = useSelector((state: RootState) => state.emplacement.emplacements);
     const loading = useSelector((state: RootState) => state.emplacement.loading);
     const error = useSelector((state: RootState) => state.emplacement.error);
-    const apiBaseUrl = process.env.REACT_APP_ARTICLE_API_BASE_URL;
-
     const INITIAL_REGION = {
         latitude: 43.6,
         longitude: 3.8833,
@@ -54,7 +52,7 @@ export default function LocationMapView() {
     const fetchArticles = async () => {
         dispatch(fetchEmplacementsStart());
         try {
-          const response = await API.get("/api/emplacements");
+          const response = await API.get("/emplacements");
           const data: Emplacement[] =  response.data;
           dispatch(fetchEmplacementsSuccess(data));
         } catch (error) {
@@ -70,7 +68,7 @@ export default function LocationMapView() {
         if (emplacements.length === 0) {
           fetchArticles();
         }
-      }, [dispatch, emplacements.length, apiBaseUrl]);
+      }, [dispatch, emplacements.length]);
 
     useEffect(() => {
         if (loading) {
@@ -123,8 +121,8 @@ export default function LocationMapView() {
         });
     }
 
-    const onCalloutSelected = (marker: any) => {
-        navigation.navigate('EmplacementDetails', { marker });
+    const onCalloutSelected = (marker) => {
+        navigation.navigate("EmplacementDetails", { marker });
     };
 
     const handleSearch = (text: string) => {
@@ -137,6 +135,7 @@ export default function LocationMapView() {
         } else {
             setFilteredCities([]);
         }
+
     };
 
     const handleSelectCity = (city: any) => {
@@ -242,98 +241,112 @@ export default function LocationMapView() {
     return (
       <View style={{ flex: 1 }}>
         <TouchableWithoutFeedback onPress={handleOutsidePress}>
-            <View style={map_view_styles.container}>
-                <View style={map_view_styles.autocompleteWrapper}>
-                    <Ionicons name="search" size={20} color="black" style={map_view_styles.searchIcon} />
-                    <TextInput
-                        style={map_view_styles.textInput}
-                        value={query}
-                        onChangeText={handleSearch}
-                        placeholder="Entrez le nom d’une ville"
-                        onFocus={handleFocus}
-                    />
-                </View>
-                {showSlider && (
-                    <View style={map_view_styles.sliderContainer}>
-                        <Text>Rayon: {radius} km</Text>
-                        <Slider
-                            style={map_view_styles.slider}
-                            minimumValue={1}
-                            maximumValue={500} // À modifier
-                            step={1}
-                            value={radius}
-                            onValueChange={setRadius}
-                        />
-                    </View>
-                )}
-                <MapView
-                    style={map_view_styles.map}
-                    initialRegion={INITIAL_REGION}
-                    ref={mapRef}
-                    showsUserLocation={true}
-                    onRegionChangeComplete={onRegionChangeComplete}
-                    testID="map-view"
-                >
-                    {visibleMarkers.map((emplacement) => (
-                        <Marker
-                            key={emplacement.id_emplacement}
-                            coordinate={emplacement.coordonnees}
-                        >
-                            <PriceBubble price={emplacement.tarif} />
-                            <Callout onPress={() => onCalloutSelected(emplacement)}>
-                                <View style={map_view_styles.calloutContainer}>
-                                    <Text style={map_view_styles.calloutTitle}>
-                                        {emplacement.localisation}
-                                    </Text>
-                                    <View >
-                                        <Image
-                                            source={{ uri: emplacement.photos[0] }} // Utilise la première photo
-                                            style={map_view_styles.image}
-                                        />
-                                    </View>
-                                    <Text style={map_view_styles.calloutDescription}>
-                                        {emplacement.caracteristique}
-                                    </Text>
-                                    <Text style={map_view_styles.priceText}>
-                                        {emplacement.tarif}€ / nuit
-                                    </Text>
-                                    <View style={map_view_styles.ratingContainer}>
-                                        <Text style={map_view_styles.ratingText}>
-                                            {emplacement.moyenneAvis} / 5
-                                        </Text>
-                                        {renderRating(emplacement.moyenneAvis)}
-                                    </View>
-                                </View>
-                            </Callout>
-                        </Marker>
-                    ))}
-                </MapView>
-                {filteredCities.length > 0 && (
-                    <View style={map_view_styles.suggestionsContainer}>
-                        <FlatList
-                            data={filteredCities}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity onPress={() => handleSelectCity(item)}>
-                                    <View style={map_view_styles.itemContainer}>
-                                        <Ionicons name="compass" size={20} color="black" />
-                                        <Text style={map_view_styles.autocompleteItemText}>{item.city_code}</Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                            keyExtractor={(item) => item.city_code}
-                            style={map_view_styles.list}
-                        />
-                    </View>
-                )}
-                <TouchableOpacity style={map_view_styles.locationButton} onPress={centerUserLocation} testID="location-button">
-                    <Ionicons name="locate" size={24} color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity style={map_view_styles.sliderToggleButton} onPress={() => setShowSlider(!showSlider)}>
-                    <Ionicons name="options" size={24} color="white" />
-                </TouchableOpacity>
+          <View style={map_view_styles.container}>
+            <View style={map_view_styles.autocompleteWrapper}>
+              <Ionicons
+                name="search"
+                size={20}
+                color="black"
+                style={map_view_styles.searchIcon}
+              />
+              <TextInput
+                style={map_view_styles.textInput}
+                value={query}
+                onChangeText={handleSearch}
+                placeholder="Entrez le nom d’une ville"
+                onFocus={handleFocus}
+              />
             </View>
+            {showSlider && (
+              <View style={map_view_styles.sliderContainer}>
+                <Text>Rayon: {radius} km</Text>
+                <Slider
+                  style={map_view_styles.slider}
+                  minimumValue={100}
+                  maximumValue={2000} // À modifier
+                  step={1}
+                  value={radius}
+                  onValueChange={setRadius}
+                />
+              </View>
+            )}
+            <MapView
+              style={map_view_styles.map}
+              initialRegion={INITIAL_REGION}
+              ref={mapRef}
+              showsUserLocation={true}
+              onRegionChangeComplete={onRegionChangeComplete}
+              testID="map-view"
+            >
+              {visibleMarkers.map((emplacement : Emplacement) => (
+                <Marker
+                  key={emplacement.idEmplacement}
+                  coordinate={emplacement.coordonnees}
+                >
+                  <PriceBubble price={emplacement.tarif} />
+                  <Callout onPress={() => onCalloutSelected(emplacement)}>
+                    <View style={map_view_styles.calloutContainer}>
+                      <Text style={map_view_styles.calloutTitle}>
+                        {emplacement.localisation}
+                      </Text>
+                      <View>
+                        <Image
+                          source={{ uri: emplacement.photos[0] }} // Utilise la première photo
+                          style={map_view_styles.image}
+                        />
+                      </View>
+                      <Text style={map_view_styles.calloutDescription}>
+                        {emplacement.caracteristique}
+                      </Text>
+                      <Text style={map_view_styles.priceText}>
+                        {emplacement.tarif}€ / nuit
+                      </Text>
+                      <View style={map_view_styles.ratingContainer}>
+                        <Text style={map_view_styles.ratingText}>
+                          {emplacement.moyenneAvis} / 5
+                        </Text>
+                        {renderRating(emplacement.moyenneAvis)}
+                      </View>
+                    </View>
+                  </Callout>
+                </Marker>
+              ))}
+            </MapView>
+            {filteredCities.length > 0 && (
+              <View style={map_view_styles.suggestionsContainer}>
+                <FlatList
+                  data={filteredCities}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => handleSelectCity(item)}>
+                      <View style={map_view_styles.itemContainer}>
+                        <Ionicons name="compass" size={20} color="black" />
+                        <Text style={map_view_styles.autocompleteItemText}>
+                          {item.city_code}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                  keyExtractor={(item) => item.city_code}
+                  style={map_view_styles.list}
+                />
+              </View>
+            )}
+            <TouchableOpacity
+              style={map_view_styles.locationButton}
+              onPress={centerUserLocation}
+              testID="location-button"
+            >
+              <Ionicons name="locate" size={24} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={map_view_styles.sliderToggleButton}
+              onPress={() => setShowSlider(!showSlider)}
+            >
+              <Ionicons name="options" size={24} color="white" />
+            </TouchableOpacity>
+          </View>
         </TouchableWithoutFeedback>
-        <Toast ref={(ref) => Toast.setRef(ref)} />
+        <Toast />
       </View>
     );  
 }

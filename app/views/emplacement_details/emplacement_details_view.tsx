@@ -7,11 +7,13 @@ import {
   ScrollView,
   Image,
 } from "react-native";
+import { useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import EmplacementDetailsFacilities from "../../components/emplacement_details/emplacement_details_facilities";
 import EmplacementDetailsImages from "../../components/emplacement_details/emplacement_details_images";
 import EmplacementDetailsRatings from "../../components/emplacement_details/emplacement_details_ratings";
 import EmplacementDetailsDescription from "../../components/emplacement_details/emplacement_details_description";
+import { Emplacement } from "../../models/emplacement_model";
 
 
 import { couleur } from "../../color";
@@ -28,29 +30,9 @@ export type Avis = {
   date_avis: string;
 };
 
-export default function EmplacementDetails({ route }) {
-  const { marker } = route.params; // Passer l'emplacement au lieu du marqueur
-
-  const avis: Avis[] = [
-    {
-      id_avis: '1',
-      id_emplacement: '1',
-      id_user: '101',
-      prenom_utilisateur: 'Alice', // Prénom ajouté
-      note: 5,
-      commentaire: 'Superbe emplacement, très proche du centre-ville avec un accès facile à toutes les commodités.',
-      date_avis: '2024-09-25',
-    },
-    {
-      id_avis: '2',
-      id_emplacement: '1',
-      id_user: '102',
-      prenom_utilisateur: 'Bob',
-      note: 4,
-      commentaire: 'Très bien situé, mais un peu bruyant la nuit.',
-      date_avis: '2024-09-20',
-    },
-  ];
+export default function EmplacementDetails() {
+  const route = useRoute();
+  const { marker } = route.params;
 
   const reservations : Reservation[] = [
     {
@@ -90,17 +72,16 @@ export default function EmplacementDetails({ route }) {
       {/* Description de l'emplacement */}
       <EmplacementDetailsDescription emplacement={marker} />
 
-
       {/* Équipements */}
       <View style={styles.facilitiesContainer}>
         <Text style={styles.sectionTitle}>Équipements</Text>
-        <EmplacementDetailsFacilities equipment={marker.equipement} />
+        <EmplacementDetailsFacilities emplacement={marker} />
       </View>
 
       {/* Évaluations */}
       <View style={styles.ratingsContainer}>
-      <Text style={styles.sectionTitle2}>Évaluations</Text>
-        <EmplacementDetailsRatings avis={avis} rating={marker.moyenneAvis} />
+        <Text style={styles.sectionTitle2}>Évaluations</Text>
+        <EmplacementDetailsRatings avis={marker} rating={marker.moyenneAvis} />
       </View>
 
       {/* Calendrier de réservation */}

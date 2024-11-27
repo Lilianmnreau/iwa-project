@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Text,
   View,
@@ -5,25 +6,18 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
-import React from "react";
 import { renderRating } from "../../utils/renderRating";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { couleur } from "../../color";
-
-interface Avis {
-  id_avis: string;
-  note: number;
-  commentaire: string;
-  date_avis: string;
-  prenom_utilisateur: string;
-}
+import useEmplacementViewModel from "../../viewModels/emplacement_viewModel";
 
 interface EmplacementDetailsRatingsProps {
-  avis: Avis[]; // Liste des avis
+  emplacementId: number; // ID de l'emplacement pour récupérer les avis
   rating: number; // Note moyenne de l'emplacement
 }
 
@@ -36,24 +30,50 @@ const truncateComment = (comment: string) => {
 };
 
 export default function EmplacementDetailsRatings({
-  avis,
+  emplacementId,
   rating,
 }: EmplacementDetailsRatingsProps) {
-  const data = [...avis, "arrow"]; // Ajouter un élément 'arrow' à la fin pour voir plus d'avis
+  const { avis, loading, error } = useEmplacementViewModel();
+
+  // Vérifiez que `avis` est bien défini avant d'appeler `filter`
+  const emplacementAvis = avis
+    ? avis.filter((a) => a.idEmplacement === emplacementId)
+    : [];
+
+  const data = [...emplacementAvis, "arrow"]; // Ajouter un élément 'arrow' à la fin pour voir plus d'avis
   const width = Dimensions.get("window").width;
   const carouselRef = React.useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
   const navigation = useNavigation();
 
   const handleArrowPress = () => {
-    navigation.navigate("EmplacementDetailsAllRatings");
+    navigation.navigate("EmplacementDetailsAllRatings", { emplacementId });
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={couleur} />
+        <Text style={styles.loadingText}>Chargement des avis...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         {renderRating(rating, true)}
-        <Text style={styles.commentsText}>{avis.length} Commentaires</Text>
+        <Text style={styles.commentsText}>
+          {emplacementAvis.length} Commentaires
+        </Text>
       </View>
       <Carousel
         ref={carouselRef}
@@ -79,7 +99,7 @@ export default function EmplacementDetailsRatings({
               <Text style={styles.arrowText}>Voir tous les avis</Text>
             </TouchableOpacity>
           ) : (
-            <View style={styles.itemContainer}>
+            <View style={styles.itemContainer} key={item.idAvis}>
               <View style={styles.profileContainer}>
                 <View style={styles.profileImagePlaceholder} />
                 <View style={styles.profileTextContainer}>
@@ -87,7 +107,7 @@ export default function EmplacementDetailsRatings({
                     <Text style={styles.profileName}>
                       {item.prenom_utilisateur}
                     </Text>
-                    <Text style={styles.commentDate}>{item.date_avis}</Text>
+                    <Text style={styles.commentDate}>{item.date}</Text>
                   </View>
                   {renderRating(item.note, false)}
                 </View>
@@ -109,14 +129,32 @@ export default function EmplacementDetailsRatings({
 
 const styles = StyleSheet.create({
   container: {
-
-
+    marginBottom: 20,
+  },
+  loadingContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#4B4B4B",
+  },
+  errorContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     marginLeft: 20,
-    marginBottom: 10
+    marginBottom: 10,
   },
   commentsText: {
     marginLeft: 10,

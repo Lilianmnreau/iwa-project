@@ -34,7 +34,7 @@ const useMessagesViewModel = () => {
   useEffect(() => {
     if (userId) {
       fetchConversations(); // Récupération initiale
-      intervalRef.current = setInterval(fetchConversations, 2500); // Actualisation toutes les 2,5 secondes
+      intervalRef.current = setInterval(fetchConversations, 10000); // Actualisation toutes les 2,5 secondes
     }
 
     return () => {

@@ -27,9 +27,14 @@ import FavoritesPage from "../views/home/all_favorite_view";
 import ArticlesPage from "../views/home/all_article_view";
 import AddArticleView from "../views/home/add_article_view";
 import TranslationView from "../views/profil/settings/translation_view";
+import { Emplacement } from "../models/emplacement_model";
+export type RootStackParamList = {
+  LocationMapView: undefined; // Aucun paramètre attendu
+  EmplacementDetails: { emplacement: Emplacement }; // Passez l'emplacement en tant que paramètre
+};
 
 const Stack = createStackNavigator();
-const EmplacementDetailsStack = createStackNavigator();
+const EmplacementDetailsStack = createStackNavigator<RootStackParamList>();
 
 function EmplacementDetailsStackNavigator({ route }) {
   const { marker } = route.params;
