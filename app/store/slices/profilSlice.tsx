@@ -8,13 +8,13 @@ interface ProfilState {
   isLoggedIn: boolean;
   loading: boolean;
   error: string | null;
-  user: User | null;
+  user: User | Promise<User>;
   userId : number | null;
 }
 
 const initialState: ProfilState = {
   profil_notifications: 78,
-  isLoggedIn: !!AsyncStorage.getItem("jwt"),
+  isLoggedIn: false,
   loading: false,
   error: null,
   user: null,
