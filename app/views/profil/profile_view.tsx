@@ -30,7 +30,7 @@ export default function ProfilView() {
   const [isEditing, setIsEditing] = useState(false);
 
   // Récupération du premier utilisateur (simulateur d'utilisateur connecté)
-  const userInfo = profilViewModel.users[0] || null; // Utiliser le premier user
+  const userInfo = profilViewModel.user; // Utiliser le premier user
   const [emplacements, setEmplacements] = useState<Emplacement[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
 
@@ -61,18 +61,19 @@ export default function ProfilView() {
 
     if (!result.canceled) {
       // Mise à jour via le ViewModel pour le premier user
-      profilViewModel.updateUser(userInfo.id_user, {
+      profilViewModel.updateUserFields({
         photo: result.assets[0].uri,
       });
     }
   };
 
   const handleChange = (field: keyof User, value: string) => {
-    profilViewModel.updateUser(userInfo.id_user, { [field]: value });
+    profilViewModel.updateUserFields({ [field]: value });
   };
 
   const handleSave = () => {
     setIsEditing(false);
+    profilViewModel.updateUser(profilViewModel.user.id);
   };
 
   const renderProfileImage = () => {
@@ -188,8 +189,8 @@ export default function ProfilView() {
               <TextInput
                 style={styles.input}
                 placeholder="Mot de passe"
-                value={userInfo?.mot_de_passe || ""}
-                onChangeText={(value) => handleChange("mot_de_passe", value)}
+                value={userInfo?.password || ""}
+                onChangeText={(value) => handleChange("password", value)}
                 secureTextEntry
               />
               <TouchableOpacity style={styles.button} onPress={handleSave}>

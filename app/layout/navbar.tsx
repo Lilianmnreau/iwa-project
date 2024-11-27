@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { HomeStackNavigator, MapStackNavigator, MessagesStackNavigator } from '../navigation/stack_navigator';
 import { ProfileStackNavigator } from '../navigation/stack_navigator';
 import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,6 +20,8 @@ export default function Navbar() {
     (state: any) => state.messages.messaging_notifications
   );
 
+  useEffect(() => {}, [isLoggedIn]);
+ 
   return (
     <Tab.Navigator
       screenOptions={{
