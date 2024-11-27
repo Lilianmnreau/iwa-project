@@ -9,6 +9,7 @@ import {
   fetchUsersStart,
   fetchUsersSuccess,
   loginSuccess,
+  logoutSuccess,
 } from "../slices/profilSlice";
 import { User } from "../../models/user.model";
 import { AxiosError } from "axios";
@@ -61,37 +62,52 @@ export const loginUser = createAsyncThunk(
   ({ email, password }: { email: string; password: string }, { dispatch }) => {
     dispatch(fetchProfilStart());
     console.log("Request to API");
-
     // First API call: Authenticate and get JWT token
     API.post("/auth/login", { email, password })
       .then((loginResponse) => {
-        const { token, userId } = loginResponse.data;
-
+        const token = loginResponse.data.token;
+        const userId = loginResponse.data.userId;
         // Save token to AsyncStorage
-        return AsyncStorage.setItem("jwt", token).then(() => {
+        AsyncStorage.setItem("jwt", token).then(() => {
           // Dispatch successful login state
-          dispatch(fetchProfilSuccess({ profil_notifications: 0, isLoggedIn: true }));
+          dispatch(
+            fetchProfilSuccess({ profil_notifications: 0, isLoggedIn: true })
+          );
           dispatch(fetchUsersStart());
-
-          // Second API call: Fetch user details
-          return API.get(`/users/${userId}`);
         });
+        // Second API call: Fetch user details
+        API.get("/users/" + userId)
+          .then((userResponse) => {
+            console.log(userResponse.data);
+            // Extract the data safely
+            const userData = userResponse.data;
+            const user: User = {
+              id: userId,
+              nom: userData.nom,
+              prenom: userData.prenom,
+              telephone: userData.telephone,
+              email: userData.email,
+              adresse: userData.adresse,
+              password: null,
+              photo: userData.photo,
+            }
+            // Store user details in the state
+            dispatch(fetchUsersSuccess(user));
+            dispatch(loginSuccess(userId));
+          })
+          .catch((error: AxiosError) => {
+            // Handle errors
+            console.log(error.message);
+            const errorMessage = error.message || "An error occurred";
+            dispatch(fetchProfilFailure(errorMessage));
+            dispatch(fetchUsersFailure(errorMessage));
+            console.error(
+              "Error during login or fetching user details:",
+              error
+            );
+          });
       })
-      .then((userResponse) => {
-        const userDetails = userResponse.data;
-
-        // Store user details in the state
-        dispatch(fetchUsersSuccess([userDetails])); // Assuming we store user details as an array
-        dispatch(loginSuccess());
-      })
-      .catch((error : AxiosError) => {
-        // Handle errors
-        console.log(error.response)
-        const errorMessage = error.message || "An error occurred";
-        dispatch(fetchProfilFailure(errorMessage));
-        dispatch(fetchUsersFailure(errorMessage));
-        console.error("Error during login or fetching user details:", error);
-      });
+      
   }
 );
 
@@ -107,6 +123,7 @@ export const logoutUser = createAsyncThunk(
       dispatch(
         fetchProfilSuccess({ profil_notifications: 0, isLoggedIn: false })
       );
+      dispatch(logoutSuccess());
     } catch (error: any) {
       dispatch(fetchProfilFailure(error.message || "Logout failed"));
       throw error;

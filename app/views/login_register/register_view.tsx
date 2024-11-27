@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import API from '../../utils/api';
 
 export default function Register({ navigation }) {
   const [firstName, setFirstName] = useState('');
@@ -10,14 +11,44 @@ export default function Register({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const handleRegister = () => {
-    if (firstName === '' || lastName === '' || email === '' || password === '' || confirmPassword === '') {
-      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
-    } else if (password !== confirmPassword) {
-      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas.');
-    } else {
-      Alert.alert('Inscription réussie', `Bienvenue ${firstName}`);
-      navigation.navigate('Login'); // Redirige vers la page de connexion après succès
+    if (
+      firstName === "" ||
+      lastName === "" ||
+      email === "" ||
+      password === "" ||
+      confirmPassword === ""
+    ) {
+      Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+      return;
     }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Erreur", "Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    const userData = {
+      prenom: firstName,
+      nom: lastName,
+      email,
+      password,
+      adresse : "",
+      telephone: "",
+      photo: "",
+    };
+
+    API.post("/auth/register", userData)
+      .then((response) => {
+        Alert.alert("Inscription réussie", `Bienvenue ${firstName}`);
+        navigation.navigate("Login"); // Redirige vers la page de connexion après succès
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'inscription:", error.message);
+        Alert.alert(
+          "Erreur",
+          "Une erreur s'est produite lors de l'inscription. Veuillez réessayer."
+        );
+      });
   };
 
   const handleLoginRedirect = () => {

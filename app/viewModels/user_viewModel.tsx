@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Toast from 'react-native-toast-message';
-import { User } from '../models/user.model';
-import { RootState } from '../store';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import Toast from "react-native-toast-message";
+import { User } from "../models/user.model";
+import { RootState } from "../store";
+import API from "../utils/api";
 import {
-  fetchUsersStart,
-  fetchUsersSuccess,
-  fetchUsersFailure,
+  fetchUserStart,
+  fetchUserSuccess,
+  fetchUserFailure,
   addUserStart,
   addUserSuccess,
   addUserFailure,
@@ -16,118 +17,107 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
-} from '../store/slices/profilSlice';
+} from "../store/slices/profilSlice";
 
 const useUserViewModel = () => {
   const dispatch = useDispatch();
-  const users = useSelector((state: RootState) => state.profil.users);
+  const user = useSelector((state: RootState) => state.profil.user);
   const loading = useSelector((state: RootState) => state.profil.loading);
+  const userId = useSelector((state: RootState) =>state.profil.userId)
   const error = useSelector((state: RootState) => state.profil.error);
-  const apiBaseUrl = process.env.REACT_APP_USER_API_BASE_URL;
+
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      dispatch(fetchUsersStart());
-      try {
-        const response = await fetch(`${apiBaseUrl}/users`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: User[] = await response.json();
-        dispatch(fetchUsersSuccess(data));
-      } catch (error) {
-        dispatch(fetchUsersFailure((error as Error).message));
-      }
-    };
+    
+    dispatch(fetchUserStart());
+    API.get(`/users/profile`)
+      .then((response) => {
+        const updated = response.data;
+        updated.password = null;
+        console.log("reset pw? " + updated.password);
+        dispatch(fetchUserSuccess(updated));
+      })
+      .catch((error) => {
+        console.error("Failed to update user:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
 
-    fetchUsers();
-  }, [dispatch, apiBaseUrl]);
+        dispatch(fetchUserFailure(errorMessage));
+        Toast.show({
+          type: "error",
+          text1: "Échec de la mise à jour de l'utilisateur",
+          text2: errorMessage,
+        });
+      });
+  }, [userId]);
 
-  const addUser = async (newUser: User) => {
-    dispatch(addUserStart());
-    try {
-      const response = await fetch(`${apiBaseUrl}/users`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newUser),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const addedUser = await response.json();
-      dispatch(addUserSuccess(addedUser));
-    } catch (error) {
-      console.error('Failed to add user:', error);
-      dispatch(addUserFailure((error as Error).message));
-      Toast.show({
-        type: 'error',
-        text1: 'Échec de l\'ajout de l\'utilisateur',
-        text2: (error as Error).message,
-      });
+
+  const updateUser = async (id: number) => {
+    dispatch(updateUserStart());
+    const updatedUser = user
+    // Remove all the null fields and the id : 
+    delete updatedUser.id;
+    if (updatedUser.password === null){
+      delete updatedUser.password
     }
+    console.log("Updating with payload : " + JSON.stringify(updatedUser))
+      API.put(`/users/${id}`, updatedUser).then((response) => {
+        const updated = response.data;
+        console.log({ responseUpdate: response.data });
+        dispatch(fetchUserSuccess(updated));
+      }).catch((error) => {
+        console.error("Failed to update user:", error);
+        const errorMessage =
+          error.response?.data?.message || error.message || "An error occurred";
+
+        dispatch(updateUserFailure(errorMessage));
+        Toast.show({
+          type: "error",
+          text1: "Échec de la mise à jour de l'utilisateur",
+          text2: errorMessage,
+        });
+      })
   };
 
-  const updateUser = async (id: string, updatedUser: Partial<User>) => {
-    dispatch(updateUserStart());
-    try {
-      const response = await fetch(`${apiBaseUrl}/users/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedUser),
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const updated = await response.json();
-      dispatch(updateUserSuccess({ id: id, updatedUser: updated }));
-    } catch (error) {
-      console.error('Failed to update user:', error);
-      dispatch(updateUserFailure((error as Error).message));
-      Toast.show({
-        type: 'error',
-        text1: 'Échec de la mise à jour de l\'utilisateur',
-        text2: (error as Error).message,
-      });
+  const updateUserFields = (updatedFields: Partial<User>) => {
+    // Merge the updated fields with the existing user object.
+    if (updatedFields.password !== null) {
+      console.log(updatedFields.password);
     }
+    const updatedUser = { ...user, ...updatedFields };
+
+    // Dispatch the updated user to the store.x
+    dispatch(updateUserSuccess({ id: user.id, updatedUser }));
   };
 
   const deleteUser = async (id: string) => {
     dispatch(deleteUserStart());
     try {
       const response = await fetch(`${apiBaseUrl}/users/${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       dispatch(deleteUserSuccess(id));
     } catch (error) {
-      console.error('Failed to delete user:', error);
+      console.error("Failed to delete user:", error);
       dispatch(deleteUserFailure((error as Error).message));
       Toast.show({
-        type: 'error',
-        text1: 'Échec de la suppression de l\'utilisateur',
+        type: "error",
+        text1: "Échec de la suppression de l'utilisateur",
         text2: (error as Error).message,
       });
     }
-  }; 
-
-  const getUserById = (id: string) => {
-    return users.find(user => user.id === id) || null;
   };
 
   return {
-    users,
+    user,
     loading,
     error,
-    addUser,
+    updateUserFields,
     updateUser,
     deleteUser,
-    getUserById,  
   };
 };
 

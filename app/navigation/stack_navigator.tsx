@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   createStackNavigator,
   TransitionPresets,
@@ -69,43 +69,53 @@ export function MapStackNavigator() {
 
 export function ProfileStackNavigator() {
   const isLoggedIn = useSelector((state: any) => state.profil.isLoggedIn);
+
   return (
-    <Stack.Navigator initialRouteName={isLoggedIn ? "Profile" : "Login"}>
-      <Stack.Screen
-        name="Profile"
-        component={ProfileView}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Reservation_detail"
-        component={Reservation_details}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Emplacement_detail"
-        component={ProfilEmplacementDetailsStackNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Add_emplacement"
-        component={AddEmplacement}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Login"
-        component={Login}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Register"
-        component={Register}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="SettingsStack"
-        component={SettingsStackNavigator}
-        options={{ headerShown: false }}
-      />
+    <Stack.Navigator>
+      {isLoggedIn ? (
+        // Écrans pour un utilisateur connecté
+        <>
+          <Stack.Screen
+            name="Profile"
+            component={ProfileView}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Reservation_detail"
+            component={Reservation_details}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Emplacement_detail"
+            component={ProfilEmplacementDetailsStackNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Add_emplacement"
+            component={AddEmplacement}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SettingsStack"
+            component={SettingsStackNavigator}
+            options={{ headerShown: false }}
+          />
+        </>
+      ) : (
+        // Écrans pour un utilisateur non connecté
+        <>
+          <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={Register}
+            options={{ headerShown: false }}
+          />
+        </>
+      )}
     </Stack.Navigator>
   );
 }

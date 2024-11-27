@@ -1,23 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { User } from '../../models/user.model';
 import { Emplacement } from '../../models/emplacement_model';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ProfilState {
   profil_notifications: number;
   isLoggedIn: boolean;
   loading: boolean;
   error: string | null;
-  users: User[];
-  userId : string | null;
+  user: User | null;
+  userId : number | null;
 }
 
 const initialState: ProfilState = {
   profil_notifications: 78,
-  isLoggedIn: false,
+  isLoggedIn: !!AsyncStorage.getItem("jwt"),
   loading: false,
   error: null,
-  users: [],
-  userId : null,
+  user: null,
+  userId: null,
 };
 
 const profilSlice = createSlice({
@@ -44,7 +45,7 @@ const profilSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    loginSuccess(state,action: PayloadAction<{ userId: string;}> ) {
+    loginSuccess(state,action: PayloadAction<{ userId: number;}> ) {
       state.isLoggedIn = true;
       state.userId = action.payload.userId;
       state.loading = false;
@@ -65,16 +66,16 @@ const profilSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
-    fetchUsersStart(state) {
+    fetchUserStart(state) {
       state.loading = true;
       state.error = null;
     },
-    fetchUsersSuccess(state, action: PayloadAction<User[]>) {
-      state.users = action.payload;
-      state.userId = action.payload[0].id;
+    fetchUserSuccess(state, action: PayloadAction<User>) {
+      state.user = action.payload;
+      state.userId = action.payload.id;
       state.loading = false;
     },
-    fetchUsersFailure(state, action: PayloadAction<string>) {
+    fetchUserFailure(state, action: PayloadAction<string>) {
       state.loading = false;
       state.error = action.payload;
     },
@@ -83,7 +84,7 @@ const profilSlice = createSlice({
       state.error = null;
     },
     addUserSuccess(state, action: PayloadAction<User>) {
-      state.users.push(action.payload);
+      state.user= action.payload;
       state.loading = false;
     },
     addUserFailure(state, action: PayloadAction<string>) {
@@ -94,11 +95,8 @@ const profilSlice = createSlice({
       state.loading = true;
       state.error = null;
     },
-    updateUserSuccess(state, action: PayloadAction<{ id: string; updatedUser: User }>) {
-      const index = state.users.findIndex(user => user.id === action.payload.id);
-      if (index !== -1) {
-        state.users[index] = action.payload.updatedUser;
-      }
+    updateUserSuccess(state, action: PayloadAction<{ id: number; updatedUser: User }>) {
+      state.user = action.payload.updatedUser;
       state.loading = false;
     },
     updateUserFailure(state, action: PayloadAction<string>) {
@@ -110,7 +108,7 @@ const profilSlice = createSlice({
       state.error = null;
     },
     deleteUserSuccess(state, action: PayloadAction<string>) {
-      state.users = state.users.filter(user => user.id !== action.payload);
+      state.user = null
       state.loading = false;
     },
     deleteUserFailure(state, action: PayloadAction<string>) {
@@ -131,9 +129,9 @@ export const {
   logoutStart,
   logoutSuccess,
   logoutFailure,
-  fetchUsersStart,
-  fetchUsersSuccess,
-  fetchUsersFailure,
+  fetchUserStart,
+  fetchUserSuccess,
+  fetchUserFailure,
   addUserStart,
   addUserSuccess,
   addUserFailure,
