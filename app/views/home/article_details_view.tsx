@@ -7,6 +7,7 @@ export default function ArticleDetails({ route }) {
   const { article } = route.params;
   const navigation = useNavigation();
 
+  console.log("article", article);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}   testID="back-button" accessibilityLabel="Retour">

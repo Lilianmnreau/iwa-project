@@ -20,26 +20,25 @@ export default function AddArticleView({ navigation }) {
   const { addNewArticle } = useArticleViewModel();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [images, setImages] = useState([]);
+  const [image, setImage] = useState(null);
   const maxLength = 400;
 
+  // Sélectionner une image depuis la galerie
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsMultipleSelection: true,
       quality: 1,
     });
 
-    if (!result.canceled) {
-      setImages([...images, ...result.assets.slice(0, 10 - images.length)]);
-    }
+    setImage(result.assets[0]);
   };
 
-  const removeImage = (index) => {
-    setImages(images.filter((_, i) => i !== index));
+  // Retirer l'image
+  const removeImage = () => {
+    setImage(null);
   };
 
-  const handleSubmit = () => {
+  // Fonction pour convertir l'image en FormData et envoyer à l'API
+  const handleSubmit = async () => {
     if (!title || !description) {
       Toast.show({
         type: 'error',
@@ -50,18 +49,46 @@ export default function AddArticleView({ navigation }) {
     }
 
     const newArticle: Article = {
-      id_article: uuid.v4().toString(), // Utiliser react-native-uuid pour générer un identifiant unique
+      idArticle: uuid.v4().toString(), // Utiliser react-native-uuid pour générer un identifiant unique
       titre: title,
       description: description,
       date: new Date().toISOString(),
-      image: "test", // Récupère les URI des images sélectionnées
+      image: "", // Placeholder pour l'image
     };
-    addNewArticle(newArticle);
-    Toast.show({
-      type: 'success',
-      text1: 'Article bien ajouté !',
-    });
-    navigation.navigate('Home');
+
+    try {
+      // Créer FormData pour envoyer l'image
+      const formData = new FormData();
+
+      if (image) {
+        const uriParts = image.uri.split('.');
+        const fileType = uriParts[uriParts.length - 1]; // ex: 'jpg', 'png'
+        const imageName = `image.${fileType}`; // Nom du fichier
+
+        // Créer un objet File à partir de l'URI de l'image
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
+
+        // Ajouter l'image au FormData
+        formData.append("file", blob); // 'file' est le champ attendu par le backend
+      }
+
+      // Ajouter un article avec ou sans image
+      await addNewArticle(newArticle, formData);  // Assurez-vous que addNewArticle accepte le FormData
+
+      Toast.show({
+        type: 'success',
+        text1: 'Article bien ajouté !',
+      });
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error("Erreur lors de la soumission:", error);
+      Toast.show({
+        type: 'error',
+        text1: "Erreur",
+        text2: "Une erreur est survenue lors de l'ajout de l'article.",
+      });
+    }
   };
 
   return (
@@ -99,17 +126,17 @@ export default function AddArticleView({ navigation }) {
       </Button>
 
       <View style={styles.imageContainer}>
-        {images.map((image, index) => (
-          <View key={index} style={styles.imageWrapper} testID={`image-${index}`}>
+        {image && (
+          <View style={styles.imageWrapper} testID="image">
             <Image source={{ uri: image.uri }} style={styles.image} />
             <TouchableOpacity
               style={styles.removeButton}
-              onPress={() => removeImage(index)}
+              onPress={removeImage}
             >
               <Text style={styles.removeButtonText}>X</Text>
             </TouchableOpacity>
           </View>
-        ))}
+        )}
       </View>
 
       <Button

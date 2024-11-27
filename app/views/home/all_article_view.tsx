@@ -32,7 +32,7 @@ export default function ArticlesPage({ navigation }) {
             <FlatList
                 data={articles}
                 renderItem={renderItem}
-                keyExtractor={item => item.id_article}
+                keyExtractor={item => item.idArticle}
             />
         </View>
     );

@@ -45,18 +45,64 @@ const useArticleViewModel = () => {
     fetchArticles();
   }, [dispatch, apiBaseUrl]);
 
-  const addNewArticle = async (newArticle: Article) => {
+  const uploadImage = async (formData: FormData) => {
+    try {
+      console.log("formData", formData)
+      const response = await fetch("http://192.168.1.210:8083/api/v1/images/upload", {
+        method: "POST",
+        body: formData, // Envoi du FormData contenant l'image
+      });
+  
+      if (!response.ok) {
+        console.log(response)
+      }
+  
+      const data = await response.json(); // Récupérer la réponse JSON du serveur
+  
+      if (data) {
+        return data.id; // Retourner l'ID de l'image uploadée
+      }
+    } catch (error) {
+      console.error("Échec de l'upload de l'image:", error);
+      Toast.show({
+        type: "error",
+        text1: "Échec de l'upload de l'image",
+        text2: error.message,
+      });
+      return null;
+    }
+  };
+  
+
+  const addNewArticle = async (newArticle: Article, formData: FormData) => {
     dispatch(addArticleStart());
     try {
-      const response = await API.post("/articles", newArticle)
-      const addedArticle = response.data
+      let imageId = "";  // Initialise imageId avec une chaîne vide
+
+      // Si un FormData contenant l'image est fourni, procéder à l'upload
+      if (formData) {
+        imageId = await uploadImage(formData); // Obtenir l'ID de l'image uploadée
+      }
+
+      // Créer l'article avec l'ID de l'image
+      const articleToSubmit = { ...newArticle, image: imageId || "" };
+      const response = await API.post("/articles", articleToSubmit);
+      
+      const addedArticle = response.data;
+      console.log("addedArticle", addedArticle);
+  
       dispatch(addArticleSuccess(addedArticle));
+  
+      Toast.show({
+        type: "success",
+        text1: "Article ajouté avec succès !",
+      });
     } catch (error) {
-      console.error('Failed to add article:', error);
+      console.error("Échec de l'ajout de l'article :", error);
       dispatch(addArticleFailure((error as Error).message));
       Toast.show({
-        type: 'error',
-        text1: 'Échec de l\'ajout de l\'article',
+        type: "error",
+        text1: "Échec de l'ajout de l'article",
         text2: (error as Error).message,
       });
     }
