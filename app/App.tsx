@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { initializeProfil } from './store/actions/profilActions';
 import Toast from 'react-native-toast-message';
 import './i18n'; // Importer la configuration i18n
+import { useNotificationViewModel } from './viewModels/notification.viewModel';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,17 @@ function AppContent() {
     // Appel de la fonction initializeProfil au chargement de l'application
     dispatch(initializeProfil())
   }, [dispatch]);
+
+  
+  const { notifications, markAsRead } = useNotificationViewModel(userId);
+
+  const markAllAsRead = () => {
+    notifications.forEach((notif) => {
+      if (!notif.read) {
+        markAsRead(notif.id);
+      }
+    });
+  };
 
   return (
     <NavigationContainer>
