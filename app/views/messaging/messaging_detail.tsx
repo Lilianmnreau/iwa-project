@@ -9,21 +9,25 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
+import { RootState } from "../store";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import useMessageViewModel from "../../viewModels/message.viewModel";
 import {  markMessagesAsSeen } from "../../store/slices/messagesSlice";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Message, MessageState } from "../../models/message.model";
 import { Conversation } from "../../models/conversation.model";
 
 export default function MessagesDetail({ route }: any) {
   const { conversationId } = route.params;
+  const userId = useSelector((state: RootState) => state.profil.userId);
+
   const {
     conversations,
-    addMessage,
+    sendMessageToConversation,
     getConversationById,
+    updateMessageStatus,
   } = useMessageViewModel();
   const navigation = useNavigation();
   const [message, setMessage] = useState("");
@@ -34,24 +38,25 @@ export default function MessagesDetail({ route }: any) {
 
   const handleSendMessage = () => {
     if (message.trim() && conversation) {
-      const newMessage: Message = {
-        id_message: String(Date.now()), // Générer un ID unique pour le nouveau message
-        id_conversation: conversationId,
-        id_sender: conversation.id_user1, // Utiliser l'ID de l'utilisateur
-        text: message,
-        timestamp: new Date().toISOString(),
-        isSentByUser: true,
-        state: MessageState.Envoye,
-      };
-
-      addMessage(conversationId, newMessage);
+      sendMessageToConversation(conversationId, userId, message);
       setMessage(""); // Réinitialiser le champ de saisie après l'envoi du message
     }
   };
 
   useEffect(() => {
-    dispatch(markMessagesAsSeen(conversationId));
-  }, [dispatch, conversationId]);
+    if (conversation) {
+      // Itérer sur les messages de la conversation
+      conversation.messages.forEach((message) => {
+        if (
+          message.senderId !== userId &&
+          message.status !== MessageState.OPENED
+        ) {
+          // Appreler la fonction pour mettre à jour le statut
+          updateMessageStatus(conversation.id,message.id, MessageState.OPENED);
+        }
+      });
+    }
+  }, [conversation, userId]);
 
   // Vérifiez si la conversation est chargée
   if (!conversation) {
@@ -65,11 +70,23 @@ export default function MessagesDetail({ route }: any) {
 
   const renderStatusIcon = (status: MessageState) => {
     switch (status) {
-      case MessageState.Envoye:
-        return <MaterialCommunityIcons name="send-clock-outline" size={16} color="#00796B" />;
-      case MessageState.Remis:
-        return <MaterialCommunityIcons name="send-check-outline" size={16} color="#00796B" />;
-      case MessageState.Vu:
+      case MessageState.SENT:
+        return (
+          <MaterialCommunityIcons
+            name="send-clock-outline"
+            size={16}
+            color="#00796B"
+          />
+        );
+      case MessageState.RECEIVED:
+        return (
+          <MaterialCommunityIcons
+            name="send-check-outline"
+            size={16}
+            color="#00796B"
+          />
+        );
+      case MessageState.OPENED:
         return <Ionicons name="eye" size={16} color="#00796B" />;
       default:
         return null;
@@ -80,19 +97,25 @@ export default function MessagesDetail({ route }: any) {
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.leftHeader}>
-          <TouchableOpacity onPress={() => navigation.goBack()} testID="go-back-button">
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            testID="go-back-button"
+          >
             <Ionicons name="arrow-back" size={32} color="black" />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.contactInfo}
             onPress={() =>
               navigation.navigate("ContactDetail", {
-                name: conversation.contactName,
+                name: `${conversation.contactFirstName} ${conversation.contactName}`,
                 avatar: conversation.contactAvatar,
               })
             }
           >
-            <Image source={ conversation.contactAvatar } style={styles.avatar} />
+            <Image
+              source={{ uri: conversation.contactAvatar }}
+              style={styles.avatar}
+            />
             <Text style={styles.contactName}>
               {`${conversation.contactFirstName} ${conversation.contactName}`}
             </Text>
@@ -102,27 +125,27 @@ export default function MessagesDetail({ route }: any) {
 
       <FlatList<Message>
         data={conversation.messages}
-        keyExtractor={(item) => item.id_message}
+        keyExtractor={(item) => String(item.id)} // ID doit être un string
         renderItem={({ item }) => (
           <View
             style={[
               styles.messageBubble,
-              item.isSentByUser ? styles.sentMessage : styles.receivedMessage,
+              item.senderId === userId
+                ? styles.sentMessage
+                : styles.receivedMessage, // Utilisation de senderId
             ]}
           >
-            <Text style={styles.messageText}>{item.text}</Text>
+            <Text style={styles.messageText}>{item.contenu}</Text>
             <View style={styles.messageMeta}>
-              {item.isSentByUser && (
-                <View style={styles.statusContainer}>
-                  <Text style={styles.timestamp}>
-                    {new Date(item.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-                  <View style={styles.iconSpacing}>
-                    {renderStatusIcon(item.state)}
-                  </View>
+              <Text style={styles.timestamp}>
+                {new Date(item.date + "Z").toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </Text>
+              {item.senderId === userId && (
+                <View style={styles.iconSpacing}>
+                  {renderStatusIcon(item.status)}
                 </View>
               )}
             </View>
@@ -137,7 +160,11 @@ export default function MessagesDetail({ route }: any) {
           value={message}
           onChangeText={setMessage}
         />
-        <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton} testID="send-button">
+        <TouchableOpacity
+          onPress={handleSendMessage}
+          style={styles.sendButton}
+          testID="send-button"
+        >
           <Ionicons name="send" size={24} color="#00796B" />
         </TouchableOpacity>
       </View>

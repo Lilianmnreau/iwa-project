@@ -1,25 +1,40 @@
 import 'intl-pluralrules'; // Importer le polyfill
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Provider, useSelector } from 'react-redux';
+import { Provider, useSelector, useDispatch } from "react-redux";
 import { store } from './store';
 import { NavigationContainer } from '@react-navigation/native';
 import Navbar from './layout/navbar';
 import { createStackNavigator } from '@react-navigation/stack';
 import Header from './layout/header';
+import { useEffect } from "react";
+import { initializeProfil } from './store/actions/profilActions';
 import Toast from 'react-native-toast-message';
 import './i18n'; // Importer la configuration i18n
 
 const Stack = createStackNavigator();
 
+function AppContent() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Appel de la fonction initializeProfil au chargement de l'application
+    dispatch(initializeProfil())
+  }, [dispatch]);
+
+  return (
+    <NavigationContainer>
+      <Header />
+      <Navbar />
+      <Toast />
+    </NavigationContainer>
+  );
+}
+
 export default function App() {
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <Header />
-        <Navbar />
-        <Toast />
-      </NavigationContainer>
+      <AppContent />
     </Provider>
   );
 }

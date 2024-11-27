@@ -1,18 +1,13 @@
 export type Message = {
-  id_message: string;
-  id_conversation: string;
-  id_sender: string;
-  text: string;
-  timestamp: string;
-  isSentByUser: boolean;
-  state: MessageState;
+  id: number;
+  senderId: number;
+  contenu: string; // Correspond au "content" du backend
+  date: string; // Date au format ISO
+  status: MessageState;
 };
 
 export enum MessageState {
-  Envoye = "envoyé",
-  Remis = "remis",
-  Vu = "vu",
+  SENT = "SENT",
+  RECEIVED = "RECEIVED",
+  OPENED = "OPENED",
 }
-
-
-

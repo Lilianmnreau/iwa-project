@@ -1,13 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AppThunk } from "../";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API from "../../utils/api"; 
 import {
   fetchProfilStart,
   fetchProfilSuccess,
   fetchProfilFailure,
-  fetchUsersFailure,
-  fetchUsersStart,
-  fetchUsersSuccess,
+  fetchUserFailure,
+  fetchUserStart,
+  fetchUserSuccess,
   loginSuccess,
   logoutSuccess,
 } from "../slices/profilSlice";
@@ -33,6 +34,24 @@ export const fetchProfileNotifications = createAsyncThunk(
     }
   }
 );
+
+export const initializeProfil = (): AppThunk => async (dispatch) => {
+  try {
+    const jwt = await AsyncStorage.getItem("jwt");
+    const userId = await AsyncStorage.getItem("userId");
+
+    if (jwt && userId) {
+      dispatch(
+        loginSuccess({
+          userId: parseInt(userId, 10),
+        })
+      );
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'initialisation du profil :", error);
+    dispatch(logoutSuccess());
+  }
+};
 
 // ** Fetch User Details **
 export const fetchUserDetails = createAsyncThunk(
@@ -72,9 +91,11 @@ export const loginUser = createAsyncThunk(
           dispatch(
             fetchProfilSuccess({ profil_notifications: 0, isLoggedIn: true })
           );
-          dispatch(fetchUsersStart());
+          dispatch(fetchUserStart());
         });
-        // Second API call: Fetch user details
+        AsyncStorage.setItem("userId",String(userId)).then(() => {
+          dispatch(loginSuccess({userId:userId}))
+        })
         API.get("/users/" + userId)
           .then((userResponse) => {
             console.log(userResponse.data);
@@ -91,7 +112,7 @@ export const loginUser = createAsyncThunk(
               photo: userData.photo,
             }
             // Store user details in the state
-            dispatch(fetchUsersSuccess(user));
+            dispatch(fetchUserSuccess(user));
             dispatch(loginSuccess(userId));
           })
           .catch((error: AxiosError) => {
@@ -99,7 +120,7 @@ export const loginUser = createAsyncThunk(
             console.log(error.message);
             const errorMessage = error.message || "An error occurred";
             dispatch(fetchProfilFailure(errorMessage));
-            dispatch(fetchUsersFailure(errorMessage));
+            dispatch(fetchUserFailure(errorMessage));
             console.error(
               "Error during login or fetching user details:",
               error
@@ -118,6 +139,7 @@ export const logoutUser = createAsyncThunk(
     try {
       // Clear JWT from AsyncStorage
       await AsyncStorage.removeItem("jwt");
+      await AsyncStorage.removeItem("userId");
 
       dispatch(
         fetchProfilSuccess({ profil_notifications: 0, isLoggedIn: false })

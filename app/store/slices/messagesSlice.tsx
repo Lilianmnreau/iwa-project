@@ -1,29 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-// Définition des statuts de message
-export enum MessageStatus {
-  Envoye = "envoyé",
-  Remis = "remis",
-  Vu = "vu",
-}
-
-// Interface pour un message
-interface Message {
-  id: string;
-  text: string;
-  timestamp: string;
-  isSentByUser: boolean;
-  status: MessageStatus;
-}
-
-// Interface pour une conversation
-interface Conversation {
-  id: string;
-  contactName: string;
-  contactFirstName: string;
-  contactAvatar: string;
-  messages: Message[];
-}
+import { Conversation } from "../../models/conversation.model";
+import { Message, MessageState } from "../../models/message.model";
 
 // Interface pour l'état des messages
 interface MessagesState {
@@ -56,13 +33,15 @@ const messagesSlice = createSlice({
     },
 
     // Chargement réussi des conversations
-    fetchConversationsSuccess(state, action: PayloadAction<Conversation[]>) {
-      state.conversations = action.payload;
-      state.messaging_notifications = action.payload.reduce(
+    fetchConversationsSuccess(state, action: PayloadAction<{conversations: Conversation[]; userId: number}>) {
+      state.conversations = action.payload.conversations;
+      state.messaging_notifications = action.payload.conversations.reduce(
         (count, conversation) =>
           count +
           conversation.messages.filter(
-            (msg) => !msg.isSentByUser && msg.status !== MessageStatus.Vu
+            (msg) =>
+              msg.senderId !== action.payload.userId &&
+              msg.status !== MessageState.OPENED
           ).length,
         0
       );
@@ -84,7 +63,7 @@ const messagesSlice = createSlice({
     // Envoi réussi d'un message
     sendMessageSuccess(
       state,
-      action: PayloadAction<{ conversationId: string; message: Message }>
+      action: PayloadAction<{ conversationId: number; message: Message }>
     ) {
       const { conversationId, message } = action.payload;
       const conversation = state.conversations.find(
@@ -111,7 +90,7 @@ const messagesSlice = createSlice({
     // Suppression réussie d'un message
     deleteMessageSuccess(
       state,
-      action: PayloadAction<{ conversationId: string; messageId: string }>
+      action: PayloadAction<{ conversationId: number; messageId: number }>
     ) {
       const { conversationId, messageId } = action.payload;
       const conversation = state.conversations.find(
@@ -132,22 +111,27 @@ const messagesSlice = createSlice({
     },
 
     // Marquer les messages d'une conversation comme vus
-    markMessagesAsSeen(state, action: PayloadAction<string>) {
-      const conversationId = action.payload;
+    markMessagesAsSeen(state, action: PayloadAction<{conversationId: number, userId : number}>) {
+      const conversationId = action.payload.conversationId;
       const conversation = state.conversations.find(
         (conv) => conv.id === conversationId
       );
       if (conversation) {
         conversation.messages.forEach((msg) => {
-          if (!msg.isSentByUser && msg.status !== MessageStatus.Vu) {
-            msg.status = MessageStatus.Vu;
+          if (
+            msg.senderId !== action.payload.userId &&
+            msg.status !== MessageState.OPENED
+          ) {
+            msg.status = MessageState.OPENED;
           }
         });
         state.messaging_notifications = state.conversations.reduce(
           (count, conv) =>
             count +
             conv.messages.filter(
-              (msg) => !msg.isSentByUser && msg.status !== MessageStatus.Vu
+              (msg) =>
+                msg.senderId !== conv.personOneId &&
+                msg.status !== MessageState.OPENED
             ).length,
           0
         );

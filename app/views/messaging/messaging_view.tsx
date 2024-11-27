@@ -14,7 +14,7 @@ import { useNavigation } from "@react-navigation/native";
 import useMessagesViewModel from "../../viewModels/message.viewModel";
 
 export default function MessagesView() {
-  const { conversations, loading, error } = useMessagesViewModel();
+  const { conversations, loading, error,fetchConversations } = useMessagesViewModel();
   const navigation = useNavigation();
   const [searchText, setSearchText] = useState("");
   const [notifications, setNotifications] = useState<{ [key: string]: number }>({});
@@ -22,6 +22,10 @@ export default function MessagesView() {
   useEffect(() => {
     checkForNotifications();
   }, [conversations]);
+
+  // setInterval(() => {
+  //   fetchConversations();
+  // },2500)
 
   const checkForNotifications = () => {
     const newNotifications: { [key: string]: number } = {};
@@ -57,23 +61,27 @@ export default function MessagesView() {
   const renderConversation = ({ item }: any) => {
     const lastMessage = item.messages[item.messages.length - 1];
     const notificationCount = notifications[item.id] || 0;
-    const lastMessageTime = new Date(lastMessage.timestamp).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    let lastMessageTime = undefined
+    if (lastMessage){
+      lastMessageTime = new Date(
+        lastMessage.date + "Z"
+      ).toLocaleTimeString([], {
+
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
+    
 
     return (
       <TouchableWithoutFeedback
         onPress={() =>
-          navigation.navigate("MessagesDetail", { conversationId: item.id_conversation })
+          navigation.navigate("MessagesDetail", { conversationId: item.id })
         }
-        testID={`conversation-${item.id_conversation}`}
+        testID={`conversation-${item.id}`}
       >
         <View style={styles.conversationItem}>
-          <Image
-            source={item.contactAvatar}
-            style={styles.avatar}
-          />
+          <Image source={item.contactAvatar} style={styles.avatar} />
           <View style={styles.textContainer}>
             <Text style={styles.contactName}>
               {`${item.contactFirstName} ${item.contactName}`}
@@ -83,12 +91,19 @@ export default function MessagesView() {
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {lastMessage.text}
+              {lastMessage === undefined
+                ? "Appuyer pour envoyer un message"
+                : lastMessage.text}
             </Text>
           </View>
           <View style={styles.rightContainer}>
-            <Text style={[styles.lastMessageTime, notificationCount > 0 && styles.lastMessageTimeWithNotif]}>
-              {lastMessageTime}
+            <Text
+              style={[
+                styles.lastMessageTime,
+                notificationCount > 0 && styles.lastMessageTimeWithNotif,
+              ]}
+            >
+              {lastMessageTime === undefined ? "Nouveau" : lastMessageTime}
             </Text>
             {notificationCount > 0 && (
               <View style={styles.notificationBadge}>
@@ -115,7 +130,7 @@ export default function MessagesView() {
       {filteredConversations.length > 0 ? (
         <FlatList
           data={filteredConversations}
-          keyExtractor={(item) => item.id_conversation}
+          keyExtractor={(item) => item.id}
           renderItem={renderConversation}
         />
       ) : (
