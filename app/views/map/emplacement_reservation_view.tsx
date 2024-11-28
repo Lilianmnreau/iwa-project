@@ -117,7 +117,7 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
         text2: `Vous avez réservé du ${startDate} au ${endDate}.`,
       });
       const newReservation: Reservation = {
-        idUser: 1,
+        idUser: userId,
         dateDebut: startDate,
         dateFin: endDate,
         statut: 'confirm',
