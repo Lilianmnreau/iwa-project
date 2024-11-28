@@ -29,6 +29,7 @@ import { RootState } from "../../store";
 export default function ProfilView() {
   const navigation = useNavigation();
   const profilViewModel = useUserViewModel();
+  const emplacementViewModel = useEmplacementViewModel();
   const reservationViewModel = useReservationViewModel();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -242,9 +243,9 @@ export default function ProfilView() {
           </View>
           {emplacements.map((emplacement) => (
             <TouchableOpacity
-              key={emplacement.id_emplacement}
+              key={emplacement.idEmplacement}
               onPress={() => navigateToEmplacementDetails(emplacement)}
-              testID={`emplacement-${emplacement.id_emplacement}`}
+              testID={`emplacement-${emplacement.idEmplacement}`}
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
@@ -255,7 +256,7 @@ export default function ProfilView() {
                   Caractéristiques: {emplacement.caracteristique}
                 </Text>
                 <Text style={styles.cardText}>
-                  Équipement: {emplacement.equipement}
+                  Équipement: {emplacement.equipements}
                 </Text>
                 <Text style={styles.cardText}>
                   Tarif: {emplacement.tarif} €

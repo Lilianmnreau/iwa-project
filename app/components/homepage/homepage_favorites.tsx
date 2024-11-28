@@ -37,10 +37,10 @@ export default function HomepageFavorites() {
     const toggleFavorite = (emplacement: Emplacement) => {
         if (isEmplacementFavorite(emplacement, userId)) {
             removeEmplacementFavorite(emplacement, userId);
-            setFavorites(prevFavorites => prevFavorites.filter(favId => favId !== emplacement.id_emplacement));
+            setFavorites(prevFavorites => prevFavorites.filter(favId => favId !== emplacement.idEmplacement));
         } else {
             addEmplacementFavorite(emplacement, userId);
-            setFavorites(prevFavorites => [...prevFavorites, emplacement.id_emplacement]);
+            setFavorites(prevFavorites => [...prevFavorites, emplacement.idEmplacement]);
         }
     };
 
@@ -99,10 +99,10 @@ export default function HomepageFavorites() {
     }
 
     // Filtrer les emplacements favoris
-    const favoriteEmplacements = emplacements.filter(emplacement => favorites.includes(emplacement.id_emplacement));
+    const favoriteEmplacements = emplacements.filter(emplacement => favorites.includes(emplacement.idEmplacement));
 
     // Ajouter un élément pour le bouton "Voir tous les favoris"
-    const dataWithButton = [...favoriteEmplacements, { id_emplacement: 'button' }];
+    const dataWithButton = [...favoriteEmplacements, { idEmplacement: 'button' }];
 
     return (
         <View style={styles.container}>
@@ -115,7 +115,7 @@ export default function HomepageFavorites() {
                     data={dataWithButton}
                     loop={false}
                     renderItem={({ index, item  }) => (
-                        item.id_emplacement === 'button' ? (
+                        item.idEmplacement === 'button' ? (
                             <TouchableOpacity onPress={handleArrowPress} style={styles.arrowContainer} activeOpacity={1}>
                                 <View style={styles.arrowCircle}>
                                     <Ionicons name="arrow-forward" size={30} color="white" />
@@ -134,10 +134,10 @@ export default function HomepageFavorites() {
                                 >
                                     <TouchableOpacity
                                         style={styles.heartIcon}
-                                        onPress={() => item.id_emplacement !== 'button' && toggleFavorite(item as Emplacement)}
+                                        onPress={() => item.idEmplacement !== 'button' && toggleFavorite(item as Emplacement)}
                                     >
                                         <Ionicons
-                                            name={favorites.includes(item.id_emplacement) ? "heart" : "heart-outline"}
+                                            name={favorites.includes(item.idEmplacement) ? "heart" : "heart-outline"}
                                             size={32}
                                             color="red"
                                         />
