@@ -15,6 +15,7 @@ const initialState: ReservationState = {
   reservations: [  {
     idReservation: 1,
     idUser: 3,
+    nomReservation:"Hoberge à Lyon",
     dateDebut: "2024-12-01",
     dateFin: "2024-12-05",
     statut: "confirmée",
@@ -25,6 +26,7 @@ const initialState: ReservationState = {
     idReservation: 2,
     idUser: 5,
     dateDebut: "2024-12-10",
+    nomReservation:"Champ à Maureillas",
     dateFin: "2024-12-15",
     statut: "en attente",
     messageVoyageur: "Je suis impatient de découvrir cet endroit.",
@@ -33,6 +35,7 @@ const initialState: ReservationState = {
   {
     idReservation: 3,
     idUser: 7,
+    nomReservation:"Camping à Prade",
     dateDebut: "2024-12-20",
     dateFin: "2024-12-25",
     statut: "confirmée",
@@ -42,39 +45,14 @@ const initialState: ReservationState = {
   {
     idReservation: 4,
     idUser: 9,
+    nomReservation:"Parking à Lyon",
     dateDebut: "2024-11-30",
     dateFin: "2024-12-03",
     statut: "annulée",
     messageVoyageur: "Désolé, j'ai dû annuler pour des raisons personnelles.",
     idEmplacement: 104
   },
-  {
-    idReservation: 5,
-    idUser: 2,
-    dateDebut: "2024-12-05",
-    dateFin: "2024-12-07",
-    statut: "confirmée",
-    messageVoyageur: "Je suis très enthousiaste, merci pour votre accueil.",
-    idEmplacement: 105
-  },
-  {
-    idReservation: 6,
-    idUser: 4,
-    dateDebut: "2024-12-12",
-    dateFin: "2024-12-14",
-    statut: "confirmée",
-    messageVoyageur: "Tout est bien réservé, je vous contacte pour plus d'infos si besoin.",
-    idEmplacement: 106
-  },
-  {
-    idReservation: 7,
-    idUser: 1,
-    dateDebut: "2024-12-18",
-    dateFin: "2024-12-22",
-    statut: "en attente",
-    messageVoyageur: "Cela semble être une excellente expérience, j'ai hâte d'y être !",
-    idEmplacement: 107
-  }],
+ ],
   loading: false,
   error: null,
   adding: false,
