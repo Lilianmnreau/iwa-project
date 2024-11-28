@@ -36,18 +36,10 @@ export default function ProfilView() {
   // Récupération du premier utilisateur (simulateur d'utilisateur connecté)
   const userInfo = profilViewModel.user; 
   const [emplacements, setEmplacements] = useState<Emplacement[]>([]);
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const reservations = useSelector((state: RootState) => state.reservation.reservations);
   const userId = useSelector((state: RootState) => state.profil.userId);
 
-  useEffect(() => {
-    console.log("LA")
-      reservationViewModel.getReservationsByUser(userId).then((reservations) => {
-        console.log("reservations" , reservations);
-        setReservations(reservations);
-      }
-      );
-    
-  }, []);
+ 
 
   useEffect(() => {
   }, [reservations] );

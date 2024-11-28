@@ -12,13 +12,10 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { Rating } from '@kolking/react-native-rating';
 import { Button } from 'react-native-paper'; // Utilisation de Button de react-native-paper
 import Toast from 'react-native-toast-message'; // Importer Toast
+import { Reservation } from '../../../models/reservation.model';
 
 type ReservationParams = {
-  reservation: {
-    date: string;
-    statut: string;
-    message_voyageur: string;
-  };
+  reservation: Reservation;
 };
 
 export default function EmplacementReservationDetails() {
@@ -57,7 +54,7 @@ export default function EmplacementReservationDetails() {
 
       <View style={styles.row} testID="reservation-date">
         <Text style={styles.label}>Date:</Text>
-        <Text style={styles.value}>{reservation.date}</Text>
+        <Text style={styles.value}>{reservation.dateDebut}{reservation.dateFin}</Text>
       </View>
 
       <View style={styles.row} testID="reservation-status">
@@ -67,7 +64,7 @@ export default function EmplacementReservationDetails() {
 
       <View style={styles.row} testID="reservation-message">
         <Text style={styles.label}>Message:</Text>
-        <Text style={styles.value}>{reservation.message_voyageur}</Text>
+        <Text style={styles.value}>{reservation.messageVoyageur}</Text>
       </View>
 
       <View style={styles.reviewContainer}>

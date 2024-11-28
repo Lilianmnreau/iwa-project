@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, Keyboard, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from '@kolking/react-native-rating';
+import { useDispatch } from 'react-redux';
+import { deleteReservation } from '../../store/slices/reservationSlice';
 
 export default function Reservation_details({ route, navigation }) {
   const { reservation } = route.params;
@@ -12,6 +14,8 @@ export default function Reservation_details({ route, navigation }) {
   const [showReviewForm, setShowReviewForm] = useState(false); // État pour gérer l'affichage du formulaire
   const [review, setReview] = useState({ note: '', commentaire: '' }); // État pour gérer l'avis
   const [rating, setRating] = useState(0);
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
     setRating(parseFloat(review.note) || 0);
@@ -20,7 +24,11 @@ export default function Reservation_details({ route, navigation }) {
   const handleCancel = () => {
     Alert.alert('Confirmation', 'Êtes-vous sûr de vouloir annuler cette réservation ?', [
       { text: 'Annuler', style: 'cancel' },
-      { text: 'Confirmer', onPress: () => { /* Logique pour annuler la réservation */ } },
+      { text: 'Confirmer', onPress: () => {
+          dispatch(deleteReservation(reservation.idReservation));
+          navigation.goBack();
+        }
+      },
     ]);
   };
 
@@ -60,7 +68,7 @@ export default function Reservation_details({ route, navigation }) {
 
           <View style={styles.detailRow}>
             <Text style={styles.label}>Date:</Text>
-            <Text style={styles.detailText}>{reservation.date_debut} / {reservation.date_fin}</Text>
+            <Text style={styles.detailText}>{reservation.dateDebut} / {reservation.dateFin}</Text>
           </View>
 
           <View style={styles.detailRow}>
@@ -70,7 +78,7 @@ export default function Reservation_details({ route, navigation }) {
 
           <View style={styles.detailRow}>
             <Text style={styles.label}>Message:</Text>
-            <Text style={styles.detailText}>{reservation.message_voyageur}</Text>
+            <Text style={[styles.detailText, styles.messageText]}>{reservation.messageVoyageur}</Text>
           </View>
 
           {endDate < currentDate ? (
@@ -89,7 +97,7 @@ export default function Reservation_details({ route, navigation }) {
             <View style={styles.reviewForm}>
               <Text style={styles.formTitle}>Donner un avis</Text>
               <View style={styles.ratingContainer}>
-                <Rating size={40} rating={rating} onChange={handleChangeRating}   testID="rating-component" />
+                <Rating size={40} rating={rating} onChange={handleChangeRating} testID="rating-component" />
               </View>
               <TextInput
                 style={styles.input}
@@ -157,6 +165,10 @@ const styles = StyleSheet.create({
   detailText: {
     fontSize: 16,
     color: '#333',
+    flex: 1,
+  },
+  messageText: {
+    flexWrap: 'wrap', // Permet au texte de s'afficher sur plusieurs lignes
   },
   button: {
     borderRadius: 8,
