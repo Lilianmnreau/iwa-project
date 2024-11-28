@@ -5,9 +5,9 @@ import moment from 'moment';
 import { Reservation } from '../../models/reservation.model';
 import Toast from 'react-native-toast-message'; // Importer Toast
 import { useNavigation } from '@react-navigation/native'; // Importer useNavigation
-import useReservationViewModel from "../../viewModels/reservation_viewModel";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { addReservation } from '../../store/slices/reservationSlice';
 
 interface EmplacementReservationProps {
   reservations: Reservation[];
@@ -17,7 +17,7 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
   const [markedDates, setMarkedDates] = useState({});
   const [selectedRange, setSelectedRange] = useState<{ startDate: string | null, endDate: string | null }>({ startDate: null, endDate: null });
   const navigation = useNavigation(); // Utiliser useNavigation
-  const { addReservation} = useReservationViewModel();
+  const dispatch = useDispatch();
   const userId = useSelector((state: RootState) => state.profil.userId);
 
   useEffect(() => {
@@ -110,7 +110,6 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
   const handleReservationConfirmation = () => {
     const { startDate, endDate } = selectedRange;
     if (startDate && endDate) {
-
       Toast.show({
         type: 'success',
         text1: 'Réservation confirmée',
@@ -120,10 +119,10 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
         idUser: userId,
         dateDebut: startDate,
         dateFin: endDate,
-        statut: 'confirm',
+        statut: 'en attente',
         messageVoyageur: 'test',
       };
-      addReservation(newReservation);
+      dispatch(addReservation(newReservation));
       // Réinitialiser les dates sélectionnées
       setSelectedRange({ startDate: null, endDate: null });
       setMarkedDates({});

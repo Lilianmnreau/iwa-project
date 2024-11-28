@@ -142,6 +142,9 @@ const reservationSlice = createSlice({
         (reservation) => reservation.idReservation !== action.payload
       );
     },
+    addReservation(state, action: PayloadAction<Reservation>) {
+      state.reservations.push(action.payload);
+    },
   },
 });
 
@@ -159,6 +162,7 @@ export const {
   deleteReservationSuccess,
   deleteReservationFailure,
   deleteReservation,
+  addReservation,
 } = reservationSlice.actions;
 
 export default reservationSlice.reducer;
