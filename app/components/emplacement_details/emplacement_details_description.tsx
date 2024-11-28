@@ -1,18 +1,32 @@
 import { Text, View, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import  {Emplacement} from '../../views/map/map_view';
+import useEmplacementFavoriteViewModel from '../../viewModels/emplacement_favorite_viewModel';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 interface EmplacementDetailsDescriptionProps {
   emplacement: Emplacement;
 }
 
 export default function EmplacementDetailsDescription({ emplacement }: EmplacementDetailsDescriptionProps) {
+    const emplacementFavorite = useEmplacementFavoriteViewModel()
     const [isFavorite, setIsFavorite] = useState(false);
+    const userId = useSelector((state: RootState) => state.profil.userId);
 
     const toggleFavorite = () => {
+        if (!isFavorite)
+          {emplacementFavorite.addEmplacementFavorite(emplacement, userId);}
+        else {
+            emplacementFavorite.removeEmplacementFavorite(emplacement, userId);
+        }
         setIsFavorite(!isFavorite);
     };
+
+    useEffect(() => {
+        setIsFavorite(emplacementFavorite.isEmplacementFavorite(emplacement,userId))
+    }, [])
 
     return (
         <View style={styles.container}>

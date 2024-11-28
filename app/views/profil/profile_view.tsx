@@ -26,6 +26,7 @@ import { TextInput } from "react-native-gesture-handler";
 export default function ProfilView() {
   const navigation = useNavigation();
   const profilViewModel = useUserViewModel();
+  const emplacementViewModel = useEmplacementViewModel();
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -36,7 +37,9 @@ export default function ProfilView() {
 
   useEffect(() => {
     if (userInfo) {
-      setEmplacements(userInfo.emplacements || []);
+      setEmplacements(emplacementViewModel.emplacements.filter((value) => {
+        return value.idUser === userInfo.id
+      }))
       setReservations(userInfo.reservations || []);
     }
   }, [userInfo]);
@@ -239,9 +242,9 @@ export default function ProfilView() {
           </View>
           {emplacements.map((emplacement) => (
             <TouchableOpacity
-              key={emplacement.id_emplacement}
+              key={emplacement.idEmplacement}
               onPress={() => navigateToEmplacementDetails(emplacement)}
-              testID={`emplacement-${emplacement.id_emplacement}`}
+              testID={`emplacement-${emplacement.idEmplacement}`}
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
@@ -252,7 +255,7 @@ export default function ProfilView() {
                   Caractéristiques: {emplacement.caracteristique}
                 </Text>
                 <Text style={styles.cardText}>
-                  Équipement: {emplacement.equipement}
+                  Équipement: {emplacement.equipements}
                 </Text>
                 <Text style={styles.cardText}>
                   Tarif: {emplacement.tarif} €

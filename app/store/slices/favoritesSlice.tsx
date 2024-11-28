@@ -32,9 +32,9 @@ const favoritesSlice = createSlice({
     addFavorite(state, action: PayloadAction<Emplacement>) {
       state.favorites.push(action.payload);
     },
-    removeFavorite(state, action: PayloadAction<{ id_user: string; id_emplacement: string }>) {
+    removeFavorite(state, action: PayloadAction<{ id_user: number; id_emplacement: number }>) {
       state.favorites = state.favorites.filter(
-        favorite => !(favorite.id_user === action.payload.id_user && favorite.id_emplacement === action.payload.id_emplacement)
+        favorite => !(favorite.idUser === action.payload.id_user && favorite.idEmplacement === action.payload.id_emplacement)
       );
     },
     resetFavorites(state) {

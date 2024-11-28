@@ -50,7 +50,7 @@ export default function AddEmplacement({ navigation }) {
     // Préparer les données pour correspondre au modèle Emplacement
     const newEmplacement = {
       idEmplacement: 0, // Généré par le backend
-      idUser: 1, // Exemple statique, à remplacer par l'utilisateur connecté
+      idUser: userId,
       localisation: emplacement.localisation || "",
       caracteristique: emplacement.caracteristique || "",
       equipements: emplacement.equipements || [],
