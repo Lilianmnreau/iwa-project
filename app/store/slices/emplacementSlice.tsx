@@ -11,7 +11,6 @@ interface Avis {
 
 interface EmplacementState {
   emplacements: Emplacement[];
-  avis: Avis[]; // Tableau global pour gérer tous les avis
   loading: boolean;
   error: string | null;
   adding: boolean;
@@ -21,7 +20,6 @@ interface EmplacementState {
 
 const initialState: EmplacementState = {
   emplacements: [],
-  avis: [],
   loading: false,
   error: null,
   adding: false,

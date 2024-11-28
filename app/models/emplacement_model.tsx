@@ -9,10 +9,20 @@ export interface Emplacement {
   disponible: boolean; // Disponibilité de l'emplacement
   moyenneAvis: number; // Moyenne des avis
   photos: string[]; // Liste des URLs des photos
+  avis: Avis[];
   coordonnees: {
     latitude: number;
     longitude: number;
     latitudeDelta: number;
     longitudeDelta: number;
   }; // Coordonnées géographiques
+}
+
+
+interface Avis {
+  idAvis: number;
+  note: number;
+  commentaire: string;
+  date: string;
+  idEmplacement: number;
 }

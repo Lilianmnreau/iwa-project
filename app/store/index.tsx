@@ -5,6 +5,8 @@ import messagesReducer from './slices/messagesSlice'
 import emplacementReducer from './slices/emplacementSlice';
 import articleReducer from './slices/articleSlice'
 import {thunk}  from "redux-thunk";
+import addEmplacement from "./slices/addEmplacementSlice";
+import favoriteReducer from "./slices/favoritesSlice"
 import reservationReducer from './slices/reservationSlice';
 
 export const store = configureStore({
@@ -12,8 +14,10 @@ export const store = configureStore({
     profil: profilReducer,
     messages: messagesReducer,
     emplacement: emplacementReducer,
+    addEmplacement: addEmplacement,
     article: articleReducer,
     reservation: reservationReducer,
+    favorites: favoriteReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
 });

@@ -81,7 +81,7 @@ export default function EmplacementDetails() {
       {/* Évaluations */}
       <View style={styles.ratingsContainer}>
         <Text style={styles.sectionTitle2}>Évaluations</Text>
-        <EmplacementDetailsRatings avis={marker} rating={marker.moyenneAvis} />
+        <EmplacementDetailsRatings emplacement={marker} rating={marker.moyenneAvis} />
       </View>
 
       {/* Calendrier de réservation */}

@@ -29,6 +29,7 @@ import { RootState } from "../../store";
 export default function ProfilView() {
   const navigation = useNavigation();
   const profilViewModel = useUserViewModel();
+  const emplacementViewModel = useEmplacementViewModel();
   const reservationViewModel = useReservationViewModel();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -40,17 +41,13 @@ export default function ProfilView() {
   const userId = useSelector((state: RootState) => state.profil.userId);
 
   useEffect(() => {
-    console.log("LA")
-      reservationViewModel.getReservationsByUser(userId).then((reservations) => {
-        console.log("reservations" , reservations);
-        setReservations(reservations);
-      }
-      );
-    
-  }, []);
-
-  useEffect(() => {
-  }, [reservations] );
+    if (userInfo) {
+      setEmplacements(emplacementViewModel.emplacements.filter((value) => {
+        return value.idUser === userInfo.id
+      }))
+      setReservations(userInfo.reservations || []);
+    }
+  }, [userInfo]);
 
   const pickImage = async () => {
     const permissionResult =
@@ -250,9 +247,9 @@ export default function ProfilView() {
           </View>
           {emplacements.map((emplacement) => (
             <TouchableOpacity
-              key={emplacement.id_emplacement}
+              key={emplacement.idEmplacement}
               onPress={() => navigateToEmplacementDetails(emplacement)}
-              testID={`emplacement-${emplacement.id_emplacement}`}
+              testID={`emplacement-${emplacement.idEmplacement}`}
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
@@ -263,7 +260,7 @@ export default function ProfilView() {
                   Caractéristiques: {emplacement.caracteristique}
                 </Text>
                 <Text style={styles.cardText}>
-                  Équipement: {emplacement.equipement}
+                  Équipement: {emplacement.equipements}
                 </Text>
                 <Text style={styles.cardText}>
                   Tarif: {emplacement.tarif} €
