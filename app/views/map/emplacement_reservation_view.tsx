@@ -11,9 +11,10 @@ import { addReservation } from '../../store/slices/reservationSlice';
 
 interface EmplacementReservationProps {
   reservations: Reservation[];
+  emplacementId: number;
 }
 
-export default function EmplacementReservation({ reservations }: EmplacementReservationProps) {
+export default function EmplacementReservation({ reservations, emplacementId }: EmplacementReservationProps) {
   const [markedDates, setMarkedDates] = useState({});
   const [selectedRange, setSelectedRange] = useState<{ startDate: string | null, endDate: string | null }>({ startDate: null, endDate: null });
   const navigation = useNavigation(); // Utiliser useNavigation
@@ -23,25 +24,27 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
   useEffect(() => {
     const disabledDates = {};
 
-    // Désactiver les dates réservées
-    reservations.forEach(reservation => {
-      let current = moment(reservation.dateDebut);
-      const end = moment(reservation.dateFin);
+    // Désactiver les dates réservées pour l'emplacement spécifique
+    reservations
+      .filter(reservation => reservation.idEmplacement === emplacementId)
+      .forEach(reservation => {
+        let current = moment(reservation.dateDebut);
+        const end = moment(reservation.dateFin);
 
-      while (current <= end) {
-        const formattedDate = current.format('YYYY-MM-DD');
-        disabledDates[formattedDate] = {
-          disabled: true,
-          disableTouchEvent: true,
-          color: '#d3d3d3',
-          textColor: 'gray',
-        };
-        current = current.add(1, 'day');
-      }
-    });
+        while (current <= end) {
+          const formattedDate = current.format('YYYY-MM-DD');
+          disabledDates[formattedDate] = {
+            disabled: true,
+            disableTouchEvent: true,
+            color: '#d3d3d3',
+            textColor: 'gray',
+          };
+          current = current.add(1, 'day');
+        }
+      });
 
     setMarkedDates(disabledDates);
-  }, [reservations]);
+  }, [reservations, emplacementId]);
 
   const handleDayPress = (day) => {
     const { dateString } = day;
@@ -121,6 +124,7 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
         dateFin: endDate,
         statut: 'en attente',
         messageVoyageur: 'test',
+        idEmplacement: emplacementId,
       };
       dispatch(addReservation(newReservation));
       // Réinitialiser les dates sélectionnées
