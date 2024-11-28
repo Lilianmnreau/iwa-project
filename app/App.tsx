@@ -14,6 +14,16 @@ import './i18n'; // Importer la configuration i18n
 import { useNotificationViewModel } from './viewModels/notification.viewModel';
 import { AppDispatch } from './store';
 const Stack = createStackNavigator();
+import { LogBox } from "react-native";
+
+// Supprimer les logs spécifiques si besoin
+LogBox.ignoreLogs([
+  "Warning: ...", // Exemple pour ignorer un avertissement spécifique
+]);
+
+// Supprimer toutes les erreurs et avertissements
+console.error = () => {}; // Neutralise les erreurs
+console.warn = () => {};  // Neutralise les avertissements
 
 function AppContent() {
   

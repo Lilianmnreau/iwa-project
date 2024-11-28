@@ -30,49 +30,51 @@ const useEmplacementViewModel = () => {
   const loading = useSelector((state: RootState) => state.emplacement.loading);
   const error = useSelector((state: RootState) => state.emplacement.error);
 
+  const fetchEmplacementsWithAvis = async () => {
+    dispatch(fetchEmplacementsStart());
+    try {
+      // Récupérer les emplacements
+      const response = await API.get("/emplacements");
+      const emplacementsData: Emplacement[] = response.data;
+
+      dispatch(fetchAvisStart());
+      // Ajouter les avis à chaque emplacement
+      const emplacementsWithAvis = await Promise.all(
+        emplacementsData.map(async (emplacement) => {
+          try {
+            const avisResponse = await API.get(
+              `/avis/emplacement/${emplacement.idEmplacement}`
+            );
+            console.log({ avisResponse: avisResponse });
+            const avis: Avis[] = avisResponse.data;
+            emplacement.avis = avis;
+            return { ...emplacement };
+            // Associer les avis à l'emplacement
+          } catch (avisError) {
+            console.error(
+              `Erreur lors de la récupération des avis pour l'emplacement ${emplacement.idEmplacement}:`,
+              avisError
+            );
+            return { ...emplacement }; // Pas d'avis en cas d'erreur
+          }
+        })
+      );
+      dispatch(fetchEmplacementsSuccess(emplacementsWithAvis));
+    } catch (err) {
+      const errorMessage =
+        (err as Error).message || "Une erreur s'est produite";
+      dispatch(fetchEmplacementsFailure(errorMessage));
+      Toast.show({
+        type: "error",
+        text1: "Erreur",
+        text2: errorMessage,
+      });
+    }
+  };
+
   // Chargement des emplacements et des avis associés
   useEffect(() => {
-    const fetchEmplacementsWithAvis = async () => {
-      dispatch(fetchEmplacementsStart());
-      try {
-        // Récupérer les emplacements
-        const response = await API.get("/emplacements");
-        const emplacementsData: Emplacement[] = response.data;
-
-        dispatch(fetchAvisStart());
-        // Ajouter les avis à chaque emplacement
-        const emplacementsWithAvis = await Promise.all(
-          emplacementsData.map(async (emplacement) => {
-            try {
-              const avisResponse = await API.get(
-                `/avis/emplacement/${emplacement.idEmplacement}`
-              );
-              console.log({ avisResponse: avisResponse });
-              const avis: Avis[] = avisResponse.data;
-              emplacement.avis = avis;
-              return { ...emplacement };
-              // Associer les avis à l'emplacement
-            } catch (avisError) {
-              console.error(
-                `Erreur lors de la récupération des avis pour l'emplacement ${emplacement.idEmplacement}:`,
-                avisError
-              );
-              return { ...emplacement }; // Pas d'avis en cas d'erreur
-            }
-          })
-        );
-        dispatch(fetchEmplacementsSuccess(emplacementsWithAvis));
-      } catch (err) {
-        const errorMessage =
-          (err as Error).message || "Une erreur s'est produite";
-        dispatch(fetchEmplacementsFailure(errorMessage));
-        Toast.show({
-          type: "error",
-          text1: "Erreur",
-          text2: errorMessage,
-        });
-      }
-    };
+    
 
     fetchEmplacementsWithAvis();
   }, [dispatch]);
@@ -88,6 +90,7 @@ const useEmplacementViewModel = () => {
         text1: "Succès",
         text2: "Emplacement ajouté avec succès",
       });
+      fetchEmplacementsWithAvis()
     } catch (err) {
       const errorMessage =
         (err as Error).message || "Une erreur s'est produite";

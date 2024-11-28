@@ -43,6 +43,13 @@ export default function ProfilView() {
  
 
   useEffect(() => {
+    if (userInfo) {
+      setEmplacements(
+        emplacementViewModel.emplacements.filter((value) => {
+          return value.idUser === userInfo.id;
+        })
+      );
+    }
   }, [reservations] );
 
   const pickImage = async () => {

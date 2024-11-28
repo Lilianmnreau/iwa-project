@@ -35,11 +35,21 @@ export default function ProfilEmplacementDetails({ route }) {
   const [photos, setPhotos] = useState(emplacement.photos.join(", "));
 
   // Récupérer les avis associés à cet emplacement depuis Redux
-  const avisList = useSelector((state: RootState) =>
-    emplacement.avis.filter(
-      (avis) => avis.idEmplacement === emplacement.idEmplacement
-    )
-  );
+  let avisList
+  try {
+      avisList = useSelector((state: RootState) =>
+      emplacement.avis.filter(
+        (avis) => avis.idEmplacement === emplacement.idEmplacement
+      )
+    );
+    } catch {
+      return (
+        <View>
+          <Text> Pas encore d'avis sur cet emplacement</Text>
+        </View>
+      )
+    }
+  
 
   const reservations = [
     {
@@ -202,13 +212,21 @@ export default function ProfilEmplacementDetails({ route }) {
       <View style={styles.reviewsContainer}>
         <Text style={styles.sectionTitle}>Avis</Text>
         <View style={styles.reviewsGrid}>
-          {avisList.map((avis) => (
-            <View key={avis.idAvis} style={styles.reviewCard}>
-              {renderStars(avis.note)}
-              <Text style={styles.reviewComment}>{avis.commentaire}</Text>
-              <Text style={styles.reviewDate}>{avis.date}</Text>
-            </View>
-          ))}
+          {avisList === undefined ? (
+            avisList.map((avis) => (
+              <View key={avis.idAvis} style={styles.reviewCard}>
+                {renderStars(avis.note)}
+                <Text style={styles.reviewComment}>{avis.commentaire}</Text>
+                <Text style={styles.reviewDate}>{avis.date}</Text>
+              </View>
+            ))
+          ) : (
+            <>
+              <View>
+                <Text> Pas encore d'avis sur cet emplacement</Text>
+              </View>
+            </>
+          )}
         </View>
       </View>
 
