@@ -17,6 +17,7 @@ import {
   deleteReservationSuccess,
   deleteReservationFailure,
 } from '../store/slices/reservationSlice';
+import API from '../utils/api';
 
 const useReservationViewModel = () => {
   const dispatch = useDispatch();
@@ -28,38 +29,15 @@ const useReservationViewModel = () => {
   const error = useSelector((state: RootState) => state.reservation.error);
   const apiBaseUrl = process.env.REACT_APP_RESERVATION_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-      dispatch(fetchReservationsStart());
-      try {
-        const response = await fetch(`${apiBaseUrl}/reservations`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: Reservation[] = await response.json();
-        dispatch(fetchReservationsSuccess(data));
-      } catch (error) {
-        dispatch(fetchReservationsFailure((error as Error).message));
-      }
-    };
-
-    fetchReservations();
-  }, [dispatch, apiBaseUrl]);
 
   const addReservation = async (newReservation: Reservation) => {
     dispatch(addReservationStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/reservations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newReservation),
-      });
-      if (!response.ok) {
+      const response = await API.post("/reservations", newReservation)
+      if (!response) {
         throw new Error('Network response was not ok');
       }
-      const addedReservation = await response.json();
+      const addedReservation = await response.data;
       dispatch(addReservationSuccess(addedReservation));
     } catch (error) {
       console.error('Failed to add reservation:', error);
