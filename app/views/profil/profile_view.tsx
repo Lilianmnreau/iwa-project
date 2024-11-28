@@ -21,19 +21,24 @@ import useUserViewModel from "../../viewModels/user_viewModel";
 import { Emplacement } from "../../models/emplacement_model";
 import { Reservation } from "../../models/reservation.model";
 import useEmplacementViewModel from "../../viewModels/emplacement_viewModel";
+import useReservationViewModel from "../../viewModels/reservation_viewModel";
 import { TextInput } from "react-native-gesture-handler";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 export default function ProfilView() {
   const navigation = useNavigation();
   const profilViewModel = useUserViewModel();
   const emplacementViewModel = useEmplacementViewModel();
+  const reservationViewModel = useReservationViewModel();
 
   const [isEditing, setIsEditing] = useState(false);
 
   // Récupération du premier utilisateur (simulateur d'utilisateur connecté)
-  const userInfo = profilViewModel.user; // Utiliser le premier user
+  const userInfo = profilViewModel.user; 
   const [emplacements, setEmplacements] = useState<Emplacement[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const userId = useSelector((state: RootState) => state.profil.userId);
 
   useEffect(() => {
     if (userInfo) {
@@ -287,22 +292,22 @@ export default function ProfilView() {
           </View>
           {reservations.map((reservation) => (
             <TouchableOpacity
-              key={reservation.id_reservation}
+              key={reservation.idReservation}
               onPress={() => navigateToReservationDetails(reservation)}
-              testID={`reservation-${reservation.id_reservation}`}
+              testID={`reservation-${reservation.idReservation}`}
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
-                  Réservation {reservation.id_reservation}
+                  Réservation {reservation.idReservation}
                 </Text>
                 <Text style={styles.cardText}>
-                  Dates: {reservation.date_debut} - {reservation.date_fin}
+                  Dates: {reservation.dateDebut} - {reservation.dateFin}
                 </Text>
                 <Text style={styles.cardText}>
                   Statut: {reservation.statut}
                 </Text>
                 <Text style={styles.cardText}>
-                  Message: {reservation.message_voyageur}
+                  Message: {reservation.messageVoyageur}
                 </Text>
               </View>
             </TouchableOpacity>
