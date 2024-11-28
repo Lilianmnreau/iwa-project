@@ -1,11 +1,11 @@
 import { Emplacement } from "./emplacement_model";
 
 export type Reservation = {
-    id_reservation: string;
-    id_user: string;
-    date_debut: string;
-    date_fin: string;
+    idReservation?: number;
+    idUser: number; 
+    dateDebut: string; 
+    dateFin: string; 
     statut: string;
-    message_voyageur: string;
-    emplacement: Emplacement;
+    messageVoyageur: string;
+    idEmplacement?: number;
   };

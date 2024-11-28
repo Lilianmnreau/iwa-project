@@ -5,6 +5,9 @@ import moment from 'moment';
 import { Reservation } from '../../models/reservation.model';
 import Toast from 'react-native-toast-message'; // Importer Toast
 import { useNavigation } from '@react-navigation/native'; // Importer useNavigation
+import useReservationViewModel from "../../viewModels/reservation_viewModel";
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 interface EmplacementReservationProps {
   reservations: Reservation[];
@@ -14,14 +17,16 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
   const [markedDates, setMarkedDates] = useState({});
   const [selectedRange, setSelectedRange] = useState<{ startDate: string | null, endDate: string | null }>({ startDate: null, endDate: null });
   const navigation = useNavigation(); // Utiliser useNavigation
+  const { addReservation} = useReservationViewModel();
+  const userId = useSelector((state: RootState) => state.profil.userId);
 
   useEffect(() => {
     const disabledDates = {};
 
     // Désactiver les dates réservées
     reservations.forEach(reservation => {
-      let current = moment(reservation.date_debut);
-      const end = moment(reservation.date_fin);
+      let current = moment(reservation.dateDebut);
+      const end = moment(reservation.dateFin);
 
       while (current <= end) {
         const formattedDate = current.format('YYYY-MM-DD');
@@ -105,12 +110,20 @@ export default function EmplacementReservation({ reservations }: EmplacementRese
   const handleReservationConfirmation = () => {
     const { startDate, endDate } = selectedRange;
     if (startDate && endDate) {
+
       Toast.show({
         type: 'success',
         text1: 'Réservation confirmée',
         text2: `Vous avez réservé du ${startDate} au ${endDate}.`,
       });
-
+      const newReservation: Reservation = {
+        idUser: userId,
+        dateDebut: startDate,
+        dateFin: endDate,
+        statut: 'confirm',
+        messageVoyageur: 'test',
+      };
+      addReservation(newReservation);
       // Réinitialiser les dates sélectionnées
       setSelectedRange({ startDate: null, endDate: null });
       setMarkedDates({});

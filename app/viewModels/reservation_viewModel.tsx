@@ -17,6 +17,7 @@ import {
   deleteReservationSuccess,
   deleteReservationFailure,
 } from '../store/slices/reservationSlice';
+import API from '../utils/api';
 
 const useReservationViewModel = () => {
   const dispatch = useDispatch();
@@ -28,38 +29,15 @@ const useReservationViewModel = () => {
   const error = useSelector((state: RootState) => state.reservation.error);
   const apiBaseUrl = process.env.REACT_APP_RESERVATION_API_BASE_URL;
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-      dispatch(fetchReservationsStart());
-      try {
-        const response = await fetch(`${apiBaseUrl}/reservations`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data: Reservation[] = await response.json();
-        dispatch(fetchReservationsSuccess(data));
-      } catch (error) {
-        dispatch(fetchReservationsFailure((error as Error).message));
-      }
-    };
-
-    fetchReservations();
-  }, [dispatch, apiBaseUrl]);
-
+  // Fonction pour ajouter une réservation
   const addReservation = async (newReservation: Reservation) => {
     dispatch(addReservationStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/reservations`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(newReservation),
-      });
-      if (!response.ok) {
+      const response = await API.post("/reservations", newReservation);  // Utilisation d'API pour envoyer la requête
+      if (!response) {
         throw new Error('Network response was not ok');
       }
-      const addedReservation = await response.json();
+      const addedReservation = response.data;
       dispatch(addReservationSuccess(addedReservation));
     } catch (error) {
       console.error('Failed to add reservation:', error);
@@ -72,20 +50,15 @@ const useReservationViewModel = () => {
     }
   };
 
+  // Fonction pour mettre à jour une réservation
   const updateReservation = async (id_reservation: string, updatedReservation: Partial<Reservation>) => {
     dispatch(updateReservationStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/reservations/${id_reservation}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedReservation),
-      });
-      if (!response.ok) {
+      const response = await API.put(`/reservations/${id_reservation}`, updatedReservation);  // Utilisation d'API pour envoyer la requête
+      if (!response) {
         throw new Error('Network response was not ok');
       }
-      const updated = await response.json();
+      const updated = response.data;
       dispatch(updateReservationSuccess({ id: id_reservation, updatedReservation: updated }));
     } catch (error) {
       console.error('Failed to update reservation:', error);
@@ -98,13 +71,12 @@ const useReservationViewModel = () => {
     }
   };
 
+  // Fonction pour supprimer une réservation
   const deleteReservation = async (id_reservation: string) => {
     dispatch(deleteReservationStart());
     try {
-      const response = await fetch(`${apiBaseUrl}/reservations/${id_reservation}`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
+      const response = await API.delete(`/reservations/${id_reservation}`);  // Utilisation d'API pour envoyer la requête
+      if (!response) {
         throw new Error('Network response was not ok');
       }
       dispatch(deleteReservationSuccess(id_reservation));
@@ -119,13 +91,50 @@ const useReservationViewModel = () => {
     }
   };
 
-  const getReservationsByUser = (id_user: string) => {
-    return reservations.filter(reservation => reservation.id_user === id_user);
+  // Fonction pour récupérer les réservations d'un utilisateur
+  const getReservationsByUser = async (idUser: number): Promise<Reservation[] | null> => {
+    try {
+      dispatch(fetchReservationsStart());
+      const response = await API.get(`/reservations/user/${idUser}`);  // Utilisation d'API pour envoyer la requête
+      const data: Reservation[] = response.data;
+      console.log("idUser", idUser);
+      dispatch(fetchReservationsSuccess(data));
+      return data; // Retourner les données si la requête fonctionne
+    } catch (error) {
+      console.error('Failed to fetch reservations:', error);
+      dispatch(fetchReservationsFailure((error as Error).message));
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de la récupération des réservations',
+        text2: (error as Error).message,
+      });
+      return []; // Retourner une liste vide en cas d'erreur
+    }
   };
 
-  const getReservationById = (id_reservation: string) => {
-    return reservations.find(reservation => reservation.id_reservation === id_reservation) || null;
+  const getReservationById = async (id_reservation: number) => {
+    dispatch(fetchReservationsStart());
+    try {
+      const response = await API.get(`/reservations/${id_reservation}`);
+      if (response.status === 200) {
+        const reservation = response.data;
+        dispatch(fetchReservationsSuccess(reservation)); // Sauvegarder dans Redux
+        return reservation;
+      } else {
+        throw new Error("La réservation n'a pas été trouvée.");
+      }
+    } catch (error) {
+      console.error('Échec de la récupération de la réservation par ID:', error);
+      dispatch(fetchReservationsFailure((error as Error).message)); // Gérer l'erreur dans Redux
+      Toast.show({
+        type: 'error',
+        text1: 'Échec de la récupération de la réservation',
+        text2: (error as Error).message,
+      });
+      return null;
+    }
   };
+  
 
   return {
     reservations,
