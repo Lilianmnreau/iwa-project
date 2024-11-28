@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Text,
   View,
@@ -15,9 +15,10 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { couleur } from "../../color";
 import useEmplacementViewModel from "../../viewModels/emplacement_viewModel";
+import { Emplacement } from "../../models/emplacement_model";
 
 interface EmplacementDetailsRatingsProps {
-  emplacementId: number; // ID de l'emplacement pour récupérer les avis
+  emplacement: Emplacement; // ID de l'emplacement pour récupérer les avis
   rating: number; // Note moyenne de l'emplacement
 }
 
@@ -30,25 +31,30 @@ const truncateComment = (comment: string) => {
 };
 
 export default function EmplacementDetailsRatings({
-  emplacementId,
+  emplacement,
   rating,
 }: EmplacementDetailsRatingsProps) {
-  const { avis, loading, error } = useEmplacementViewModel();
-
-  // Vérifiez que `avis` est bien défini avant d'appeler `filter`
-  const emplacementAvis = avis
-    ? avis.filter((a) => a.idEmplacement === emplacementId)
-    : [];
-
-  const data = [...emplacementAvis, "arrow"]; // Ajouter un élément 'arrow' à la fin pour voir plus d'avis
+  if (!emplacement.avis) {
+    return (
+    <View style={styles.errorContainer}>
+      <Text style={styles.errorText}>{"Pas d'avis pour le moment"}</Text>
+    </View>);
+  }
+  console.log("pourquoi pas de " + emplacement);
+  const {loading, error, getEmplacementById } = useEmplacementViewModel();
+  const avis = emplacement.avis;
+  console.log("ici avec des avis :" + avis)
+  const data = [...avis, "arrow"]; // Ajouter un élément 'arrow' à la fin pour voir plus d'avis
   const width = Dimensions.get("window").width;
   const carouselRef = React.useRef<ICarouselInstance>(null);
   const progress = useSharedValue<number>(0);
   const navigation = useNavigation();
 
   const handleArrowPress = () => {
-    navigation.navigate("EmplacementDetailsAllRatings", { emplacementId });
+    navigation.navigate("EmplacementDetailsAllRatings",{ avis });
   };
+  
+
 
   if (loading) {
     return (
@@ -67,13 +73,13 @@ export default function EmplacementDetailsRatings({
     );
   }
 
+  
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         {renderRating(rating, true)}
-        <Text style={styles.commentsText}>
-          {emplacementAvis.length} Commentaires
-        </Text>
+        <Text style={styles.commentsText}>{avis.length} Commentaires</Text>
       </View>
       <Carousel
         ref={carouselRef}

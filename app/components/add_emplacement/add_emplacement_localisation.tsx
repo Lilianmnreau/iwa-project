@@ -1,37 +1,37 @@
 import React from "react";
 import { View, Text, TextInput, StyleSheet } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import { setCaracteristique } from "../../store/slices/addEmplacementSlice"; // Assurez-vous que le chemin est correct
+import { setLocalisation } from "../../store/slices/addEmplacementSlice"; // Action pour mettre à jour la localisation
 import { RootState } from "../../store"; // Importez le type RootState
 
-export default function AddEmplacementDescription() {
+export default function AddEmplacementLocation() {
   const dispatch = useDispatch();
-  const description = useSelector(
-    (state: RootState) => state.addEmplacement.caracteristique
+  const localisation = useSelector(
+    (state: RootState) => state.addEmplacement.localisation
   );
-  const maxLength = 400;
+  const maxLength = 200;
 
-  const handleDescriptionChange = (text: string) => {
-    dispatch(setCaracteristique(text));
+  const handleLocalisationChange = (text: string) => {
+    dispatch(setLocalisation(text));
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Description</Text>
+      <Text style={styles.title}>Localisation</Text>
       <Text style={styles.instructions}>
-        Décrivez brièvement votre emplacement
+        Entrez l'adresse ou la localisation de l'emplacement
       </Text>
       <TextInput
         style={styles.input}
         multiline
         maxLength={maxLength}
-        placeholder="Entrez la description ici..."
-        placeholderTextColor="#B0BEC5" // Couleur du texte de l'espace réservé
-        value={description}
-        onChangeText={handleDescriptionChange}
+        placeholder="Entrez la localisation ici..."
+        placeholderTextColor="#B0BEC5"
+        value={localisation}
+        onChangeText={handleLocalisationChange}
       />
       <Text style={styles.charCount}>
-        {description.length}/{maxLength} caractères
+        {localisation.length}/{maxLength} caractères
       </Text>
     </View>
   );
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
-    height: 100,
+    height: 60,
     borderColor: "#B0BEC5",
     borderWidth: 1,
     borderRadius: 5,

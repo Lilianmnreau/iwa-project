@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { Emplacement } from "../models/emplacement_model";
-import { Avis } from "../store/slices/emplacementSlice"; // Modèle Avis défini dans le slice
+import { Avis, fetchAvisStart } from "../store/slices/emplacementSlice"; // Modèle Avis défini dans le slice
 import { RootState } from "../store";
 import API from "../utils/api";
 import {
@@ -39,6 +39,7 @@ const useEmplacementViewModel = () => {
         const response = await API.get("/emplacements");
         const emplacementsData: Emplacement[] = response.data;
 
+        dispatch(fetchAvisStart());
         // Ajouter les avis à chaque emplacement
         const emplacementsWithAvis = await Promise.all(
           emplacementsData.map(async (emplacement) => {
@@ -46,18 +47,20 @@ const useEmplacementViewModel = () => {
               const avisResponse = await API.get(
                 `/avis/emplacement/${emplacement.idEmplacement}`
               );
+              console.log({ avisResponse: avisResponse });
               const avis: Avis[] = avisResponse.data;
-              return { ...emplacement, avis }; // Associer les avis à l'emplacement
+              emplacement.avis = avis;
+              return { ...emplacement };
+              // Associer les avis à l'emplacement
             } catch (avisError) {
               console.error(
                 `Erreur lors de la récupération des avis pour l'emplacement ${emplacement.idEmplacement}:`,
                 avisError
               );
-              return { ...emplacement, avis: [] }; // Pas d'avis en cas d'erreur
+              return { ...emplacement }; // Pas d'avis en cas d'erreur
             }
           })
         );
-
         dispatch(fetchEmplacementsSuccess(emplacementsWithAvis));
       } catch (err) {
         const errorMessage =
@@ -95,6 +98,23 @@ const useEmplacementViewModel = () => {
         text2: errorMessage,
       });
     }
+  };
+
+  // Recherche d'un emplacement spécifique dans le state
+  const getEmplacementById = (
+    idEmplacement: number
+  ): Emplacement | undefined => {
+    const emplacement = emplacements.find(
+      (e) => e.idEmplacement === idEmplacement
+    );
+    if (!emplacement) {
+      Toast.show({
+        type: "error",
+        text1: "Erreur",
+        text2: `Emplacement avec l'ID ${idEmplacement} non trouvé.`,
+      });
+    }
+    return emplacement;
   };
 
   // Mise à jour d'un emplacement
@@ -161,6 +181,7 @@ const useEmplacementViewModel = () => {
     addEmplacement,
     updateEmplacement,
     deleteEmplacement,
+    getEmplacementById, 
   };
 };
 

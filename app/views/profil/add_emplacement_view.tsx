@@ -13,52 +13,77 @@ import AddEmplacementDescription from "../../components/add_emplacement/add_empl
 import AddEmplacementPrice from "../../components/add_emplacement/add_emplacement_price";
 import AddEmplacementAddPhoto from "../../components/add_emplacement/add_emplacement_add_photo";
 import { couleur } from "../../color";
-import Toast from 'react-native-toast-message'; // Importer Toast
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store'; // Assurez-vous que le chemin est correct
-import { resetEmplacement } from '../../store/slices/addEmplacementSlice'; // Importer resetEmplacement
-import useEmplacementViewModel from '../../viewModels/emplacement_viewModel'; // Importer le hook
+import Toast from "react-native-toast-message";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store";
+import { resetEmplacement } from "../../store/slices/addEmplacementSlice";
+import useEmplacementViewModel from "../../viewModels/emplacement_viewModel";
+import AddEmplacementLocation from "../../components/add_emplacement/add_emplacement_localisation";
 
 export default function AddEmplacement({ navigation }) {
   const dispatch = useDispatch();
   const { addEmplacement } = useEmplacementViewModel();
-  const emplacement = useSelector((state: RootState) => state.emplacement.emplacements[0]);
+  const userId = useSelector(
+    (state: RootState) => state.profil.userId // Assurez-vous que le slice `addEmplacement` est bien configuré
+  );
+  // Récupérer l'emplacement temporaire dans le state Redux
+  const emplacement = useSelector(
+    (state: RootState) => state.addEmplacement // Assurez-vous que le slice `addEmplacement` est bien configuré
+  );
 
   const handleAddEmplacement = () => {
-    // Vérifier si certains attributs sont nuls
-    if (!emplacement.coordonnees || !emplacement.caracteristique || !emplacement.tarif || emplacement.photos.length === 0) {
+    // Validation des champs obligatoires
+    if (
+      !emplacement.coordonnees ||
+      !emplacement.caracteristique ||
+      !emplacement.tarif ||
+      emplacement.photos.length === 0
+    ) {
       Toast.show({
-        type: 'error',
-        text1: 'Erreur',
-        text2: 'Veuillez remplir tous les champs obligatoires.',
+        type: "error",
+        text1: "Erreur",
+        text2: "Veuillez remplir tous les champs obligatoires.",
       });
       return;
     }
 
-    addEmplacement({
-      ...emplacement,
-      id_user: '1', // A changer
-      id_emplacement: emplacement.id_emplacement || '',
-      localisation: emplacement.localisation || '',
-      caracteristique: emplacement.caracteristique || '',
-      equipement: Array.isArray(emplacement.equipement) ? emplacement.equipement : [],
-      tarif: typeof emplacement.tarif === 'number' ? emplacement.tarif : 0,
-      disponible: emplacement.disponible || false,
-      moyenneAvis: emplacement.moyenneAvis || 0,
+    // Préparer les données pour correspondre au modèle Emplacement
+    const newEmplacement = {
+      idEmplacement: 0, // Généré par le backend
+      idUser: 1, // Exemple statique, à remplacer par l'utilisateur connecté
+      localisation: emplacement.localisation || "",
+      caracteristique: emplacement.caracteristique || "",
+      equipements: emplacement.equipements || [],
+      services: emplacement.services || [],
+      tarif: emplacement.tarif || 0,
+      disponible: emplacement.disponible ?? true,
+      moyenneAvis: 0, // Par défaut à 0 pour un nouvel emplacement
       photos: emplacement.photos || [],
-      coordonnees: emplacement.coordonnees || { latitude: 0, longitude: 0, latitudeDelta: 0.0922, longitudeDelta: 0.0421 },
-    });
+      avis: [], // Aucun avis au moment de l'ajout
+      coordonnees: emplacement.coordonnees || {
+        latitude: 0,
+        longitude: 0,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      },
+    };
 
-    // Logique pour ajouter l'emplacement
+
+    // Ajouter l'emplacement via le ViewModel
+    addEmplacement(newEmplacement);
+
+    // Afficher une notification de succès
     Toast.show({
-      type: 'success',
-      text1: 'Emplacement ajouté avec succès !',
+      type: "success",
+      text1: "Succès",
+      text2: "Emplacement ajouté avec succès !",
     });
 
-    // Réinitialiser l'emplacement dans le store
+    // Réinitialiser l'état après ajout
     dispatch(resetEmplacement());
 
-    navigation.navigate("Profile"); // Rediriger vers le profil après l'ajout
+    // Rediriger vers la page Profil
+    navigation.navigate("Profile");
   };
 
   return (
@@ -76,12 +101,13 @@ export default function AddEmplacement({ navigation }) {
         <View style={styles.facilitiesContainer}>
           <AddEmplacementFacilities />
         </View>
+        <AddEmplacementLocation />r
         <AddEmplacementDescription />
         <AddEmplacementAddPhoto />
         <AddEmplacementPrice />
         <TouchableOpacity
           style={styles.addButton}
-          onPress={handleAddEmplacement} // Appeler handleAddEmplacement
+          onPress={handleAddEmplacement}
         >
           <Text style={styles.addButtonText}>Ajouter l'emplacement</Text>
         </TouchableOpacity>
@@ -96,7 +122,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     padding: 20,
-    backgroundColor: "#F0F4F8", // Couleur de fond douce pour une meilleure lisibilité
+    backgroundColor: "#F0F4F8",
   },
   header: {
     flexDirection: "row",
@@ -110,10 +136,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   mapContainer: {
-    height: 400, // Hauteur fixe pour le conteneur de la carte
+    height: 400,
     borderRadius: 10,
     overflow: "hidden",
-    backgroundColor: "#FFFFFF", // Couleur de fond pour le conteneur de la carte
+    backgroundColor: "#FFFFFF",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -127,7 +153,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   addButton: {
-    backgroundColor: "#4CAF50", // Couleur verte pour le bouton
+    backgroundColor: "#4CAF50",
     padding: 15,
     borderRadius: 5,
     alignItems: "center",
