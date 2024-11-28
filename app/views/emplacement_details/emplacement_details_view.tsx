@@ -87,7 +87,7 @@ export default function EmplacementDetails() {
       {/* Calendrier de réservation */}
       <View style={styles.reservationContainer}>
         {/* Intégration du composant de calendrier ici */}
-        <EmplacementReservation reservations={reservations} />
+        <EmplacementReservation reservations={reservations} emplacementId={marker.idEmplacement} emplacementName ={marker.localisation} />
       </View>
     </ScrollView>
   );

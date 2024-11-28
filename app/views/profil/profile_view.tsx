@@ -301,7 +301,7 @@ export default function ProfilView() {
             >
               <View style={styles.card}>
                 <Text style={styles.cardTitle}>
-                  Réservation {reservation.idReservation}
+                  {reservation.idReservation}
                 </Text>
                 <Text style={styles.cardText}>
                   Dates: {reservation.dateDebut} - {reservation.dateFin}

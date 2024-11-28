@@ -12,9 +12,10 @@ import { addReservation } from '../../store/slices/reservationSlice';
 interface EmplacementReservationProps {
   reservations: Reservation[];
   emplacementId: number;
+  emplacementName: string;
 }
 
-export default function EmplacementReservation({ reservations, emplacementId }: EmplacementReservationProps) {
+export default function EmplacementReservation({ reservations, emplacementId, emplacementName }: EmplacementReservationProps) {
   const [markedDates, setMarkedDates] = useState({});
   const [selectedRange, setSelectedRange] = useState<{ startDate: string | null, endDate: string | null }>({ startDate: null, endDate: null });
   const navigation = useNavigation(); // Utiliser useNavigation
@@ -121,9 +122,10 @@ export default function EmplacementReservation({ reservations, emplacementId }: 
       const newReservation: Reservation = {
         idUser: userId,
         dateDebut: startDate,
+        nomReservation : emplacementName,
         dateFin: endDate,
         statut: 'en attente',
-        messageVoyageur: 'test',
+        messageVoyageur: 'Bonjour , je suis intéressé par votre emplacement !',
         idEmplacement: emplacementId,
       };
       dispatch(addReservation(newReservation));
